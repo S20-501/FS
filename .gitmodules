@@ -1,0 +1,3 @@
+[submodule "lib/ConsoleMonitor"]
+	path = lib/ConsoleMonitor
+	url = https://github.com/kooooootb/ConsoleMonitor.git
