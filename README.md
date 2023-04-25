@@ -2,11 +2,6 @@
 
 Filesystem RT-11.
 
-Clone project:
-```
-git clone --recurse-submodules https://github.com/S20-501/FS
-```
-
 Build project:
 
 Old CMake (3.5):
