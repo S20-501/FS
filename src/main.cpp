@@ -1,25 +1,46 @@
 #include <iostream>
 #include <fstream>
 
-#include "Filesystem.hpp"
-#include "commands/FilesystemBaseCommandFactory.hpp"
 #include "../Monitor.h"
-//#include "monitor/CommandFactory.h"
+#include "Filesystem.hpp"
 
+#include "commands/Init.h"
+#include "commands/Full.h"
+#include "commands/Empty.h"
+#include "commands/Enter.h"
+#include "commands/Copy.h"
+#include "commands/Move.h"
+#include "commands/Del.h"
+#include "commands/Squeeze.h"
+#include "commands/Help.h"
+#include "commands/FSCommandFactory.hpp"
+#include "BinSerializer.hpp"
 
 //#define MONITOR_WITHFILE
 
 int main() {
-    Filesystem fs = Filesystem();
+    BinSerializer binSerializer;
 
+    auto fs = Filesystem(binSerializer);
 
-    ////    try {
-////        fs.init(32, 6, "QUAFFFFFFFFFFFFFQQA");
-////    } catch (char *e) {
-////        std::cerr << e << std::endl;
-////    }
-//
-//    fs.open();
+    try {
+        fs.open("fs.bin");
+    } catch (char *e) {
+        // TODO: please run init
+        std::cerr << e << std::endl;
+    }
+
+    auto commandFactory = FSCommandFactory<std::tuple<
+        Init
+//        Full,
+//        Empty,
+//        Enter,
+//        Copy,
+//        Move,
+//        Del,
+//        Squeeze,
+//        Help
+    >>(fs);
 
 #ifdef MONITOR_WITHFILE
     std::ifstream istream("input.txt");
@@ -32,12 +53,14 @@ int main() {
         throw std::runtime_error("can't find output file");
     }
 
-    Monitor monitor(istream, ostream, true);
+    Monitor monitor(commandFactory, istream, ostream, true);
 #else //MONITOR_WITHFILE
-    Monitor monitor(std::cin, std::cout, false);
+    Monitor monitor(commandFactory, std::cin, std::cout, false);
 #endif //MONITOR_WITHFILE
 
     monitor.run();
+
+    fs.close();
 
     return 0;
 }

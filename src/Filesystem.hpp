@@ -10,6 +10,7 @@
 #include "FilesystemInfo.hpp"
 #include "FileRecord.hpp"
 #include "FilesystemSegment.hpp"
+#include "ISerializer.hpp"
 
 typedef std::uint8_t byte;
 
@@ -33,7 +34,6 @@ typedef std::uint8_t byte;
 
 class Filesystem {
 private:
-    std::fstream file;
 
 
     static constexpr byte FILESYSTEM_INFO_START_BLOCK = 1;
@@ -42,25 +42,32 @@ private:
     static constexpr uint16_t BLOCK_SIZE = 512;
 
 public:
+    ISerializer &serializer;
     FilesystemInfo filesystemInfo {};
     FilesystemSegment *filesystemSegment = nullptr;
 
 public:
-    Filesystem() : file() {}
+    explicit Filesystem(ISerializer &serializer) : serializer(serializer) {}
 
     Filesystem(Filesystem &filesystem) = delete;
+//    : serializer(filesystem.serializer), filesystemInfo(filesystem.filesystemInfo) {
+//        std::copy(filesystem.filesystemSegment, filesystem.filesystemSegment, filesystemSegment);
+//
+//    }
+// TODO
 
-    Filesystem(Filesystem &&filesystem) noexcept : file() {
-        file = std::move(filesystem.file);
-
+    Filesystem(Filesystem &&filesystem) noexcept
+    : serializer(filesystem.serializer), filesystemInfo(filesystem.filesystemInfo) {
         filesystemSegment = filesystem.filesystemSegment;
         filesystem.filesystemSegment = nullptr;
     }
 
-    Filesystem &operator =(const Filesystem &filesystem) = delete;
+//    Filesystem &operator =(const Filesystem &filesystem) = default;
+//    TODO
 
     Filesystem &operator =(Filesystem &&filesystem) noexcept {
-        file = std::move(filesystem.file);
+        serializer = filesystem.serializer;
+        filesystemInfo = filesystem.filesystemInfo;
 
         filesystemSegment = filesystem.filesystemSegment;
         filesystem.filesystemSegment = nullptr;
@@ -68,82 +75,22 @@ public:
         return *this;
     }
 
-    void init(byte blocks, byte segments, const char *label = "DEFAULT"){
-        file.open("fs.bin", std::ios_base::out);
+    void open(const std::string& filename){
+        serializer.open(filename);
+        serializer.load(filesystemInfo);
 
-        if (!file.is_open()) {
-            throw std::exception();
-        }
-
-        filesystemSegment = new FilesystemSegment[segments];
-        // TODO: not enough memory
-
-
-        uint16_t fsHeaderSize = SEGMENTS_START_BLOCK + segments + SEGMENT_LENGTH_IN_BLOCKS;
-        uint16_t currentSegmentFilesStart = fsHeaderSize;
-        uint16_t blocksPerSegment = blocks / segments;
-
-
-        filesystemInfo.segmentsCount = segments;
-        filesystemInfo.blocksCount = blocks;
-        strncpy(filesystemInfo.volumeLabel, label, 11);
-
-        file.seekp(FILESYSTEM_INFO_START_BLOCK * BLOCK_SIZE, std::ios_base::beg);
-        file.write(reinterpret_cast<const char *>(&filesystemInfo), sizeof(filesystemInfo));
-        // TODO: not enough memory
-
-
-        for (int i = 0; i < segments; i++){
-//            filesystemSegment->segmentHeader.
-
-            filesystemSegment[i].fileRecord[0].recordType = RECORDS_END;
-            filesystemSegment[i].segmentHeader.segmentsCount = segments;
-            filesystemSegment[i].segmentHeader.filesStart = currentSegmentFilesStart;
-
-            currentSegmentFilesStart += blocksPerSegment;
-
-            for (int j = 0; j < 63; ++j) {
-                filesystemSegment[i].fileRecord[j].blockCount = static_cast<uint16_t>(j);
-            }
-
-            file.seekp((SEGMENTS_START_BLOCK + i) * SEGMENT_LENGTH_IN_BLOCKS * BLOCK_SIZE, std::ios_base::beg);
-            file.write(reinterpret_cast<const char *>(&filesystemSegment[i]), sizeof(filesystemSegment[i]));
-            // TODO: not enough memory
-
-        }
-
-    }
-
-    void open(){
-        file.open("fs.bin");
-
-        if (!file.is_open()) {
-            throw "File mnort founfd, please init";
-        }
-
-
-        file.seekg(FILESYSTEM_INFO_START_BLOCK * BLOCK_SIZE, std::ios_base::beg);
-        file.read(reinterpret_cast<char *>(&filesystemInfo), sizeof(filesystemInfo));
-
-        if (filesystemInfo.segmentsCount > 31) {
-            throw "e";
-        }
-
+        delete[] filesystemSegment;
         filesystemSegment = new FilesystemSegment[filesystemInfo.segmentsCount];
         // TODO: not enough memory
 
 
         for (int i = 0; i < filesystemInfo.segmentsCount; i++){
-            file.seekg((SEGMENTS_START_BLOCK + i) * SEGMENT_LENGTH_IN_BLOCKS * BLOCK_SIZE, std::ios_base::beg);
-            file.read(reinterpret_cast<char *>(&filesystemSegment[i]), sizeof(filesystemSegment[i]));
-            // TODO: unexpected end of file
+            serializer.load(filesystemSegment[i], i);
         }
-
-        file.close();
     }
 
     void close(){
-        file.close();
+        serializer.close();
     }
 };
 
