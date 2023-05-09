@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
+#include <sstream>
 #include "FileRecord.hpp"
 #include "FilesystemInfo.hpp"
 
@@ -26,9 +28,10 @@ public:
         this->tomSize = tomSize;
         this->flags = flags;
     }
-    void execute() {
+    std::string run() {
         bool shouldPrintFree = ( std::find(flags.begin(), flags.end(), "empty") != flags.end() ) ||
                                ( std::find(flags.begin(), flags.end(), "e") != flags.end() );
+        std::stringstream ss;
 
     }
 };

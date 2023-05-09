@@ -1,6 +1,7 @@
 //
 // Created by evezers on 01/05/23.
 //
+#include <cstdint>
 
 #ifndef FS_FILESYSTEMINFO_HPP
 #define FS_FILESYSTEMINFO_HPP
