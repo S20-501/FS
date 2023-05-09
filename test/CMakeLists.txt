@@ -18,13 +18,14 @@ include(GoogleTest)
 # ----------GTest Connect
 
 add_executable(
-        mytest
-        test.cpp
+        FS_tests
+        commandFactoryTest.cpp
 )
 
 target_link_libraries(
-        mytest
+        FS_tests
         GTest::gtest_main
+        monitor
 )
 
-gtest_discover_tests(mytest)
+gtest_discover_tests(FS_tests)

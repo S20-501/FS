@@ -29,5 +29,8 @@ if(NOT CMAKE_CXX_EXTENSIONS)
     set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
-add_executable(FS main.cpp Full.hpp Empty.hpp)
-target_link_libraries(FS monitor)
+# make commands directory visible in cmake
+add_subdirectory(commands) # includes adding util funcs
+
+add_executable(FS_main main.cpp)
+target_link_libraries(FS_main monitor FSCommands)

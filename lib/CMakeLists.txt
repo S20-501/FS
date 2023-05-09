@@ -2,8 +2,8 @@
 include(FetchContent)
 FetchContent_Declare(
   ConsoleMonitor
-  GIT_REPOSITORY https://github.com/kooooootb/ConsoleMonitor.git
-  GIT_TAG        c3ee3fd9c2ea5460764f4b457c2af608e7d2b3eb
+  GIT_REPOSITORY https://github.com/evezers/ConsoleMonitor.git
+  GIT_TAG        b675234c01dfb898806aaa97c5543a5985db00ed
 )
 
 FetchContent_MakeAvailable(ConsoleMonitor)
