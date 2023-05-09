@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
+#include <sstream>
 #include "FileRecord.hpp"
 #include "FilesystemInfo.hpp"
 
@@ -28,7 +30,7 @@ public:
         this->flags = flags;
     }
 
-    void execute() {
+    std::string run() {
             bool shouldPrintFree = ( std::find(flags.begin(), flags.end(), "empty") != flags.end() ) ||
                                    ( std::find(flags.begin(), flags.end(), "e") != flags.end() );
 
@@ -38,32 +40,34 @@ public:
             bool shouldPrintOnlyHeader = ( std::find(flags.begin(), flags.end(), "headeronly") != flags.end() ) ||
                                          ( std::find(flags.begin(), flags.end(), "o") != flags.end() );
 
+            std::stringstream ss;
+
             if (shouldPrintOnlyHeader) {
-                std::cout << tomLabel << " " << tomSize << "\n";
-                return;
+                ss << tomLabel << " " << tomSize << "\n";
+                return ss.str();
             }
 
             if (shouldPrintHeader) {
-                std::cout << tomLabel << " " << tomSize << "\n";
+                ss << tomLabel << " " << tomSize << "\n";
             }
 
             for (int i = 0; i < fileRecordsCount; ++i) {
                 FileRecord fileRecord = fileRecords[i];
 
                 if (shouldPrintFree) {
-                    std::cout << static_cast<uint16_t>(fileRecord.recordType) << " "
+                    ss << static_cast<uint16_t>(fileRecord.recordType) << " "
                               << fileRecord.fileName << " "
-                              << fileRecord.blockCount;
+                              << fileRecord.blockCount << "\n";
                 }
                 else {
                     if (fileRecord.recordType != RecordType::FREE) {
-                        std::cout << static_cast<uint16_t>(fileRecord.recordType) << " "
+                        ss << static_cast<uint16_t>(fileRecord.recordType) << " "
                                   << fileRecord.fileName << " "
-                                  << fileRecord.blockCount;
+                                  << fileRecord.blockCount << "\n";
                     }
                 }
             }
-
+            return ss.str();
     }
 };
 

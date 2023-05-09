@@ -29,5 +29,5 @@ if(NOT CMAKE_CXX_EXTENSIONS)
     set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
-add_executable(FS main.cpp)
+add_executable(FS main.cpp Full.hpp)
 target_link_libraries(FS monitor)
