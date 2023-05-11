@@ -5,41 +5,12 @@
 #ifndef FS_FILESYSTEM_HPP
 #define FS_FILESYSTEM_HPP
 
-#include <fstream>
-#include <cstring>
 #include "FilesystemInfo.hpp"
-#include "FileRecord.hpp"
 #include "FilesystemSegment.hpp"
 #include "ISerializer.hpp"
 #include "exceptions/FilesystemNotInitializedException.hpp"
 
-typedef std::uint8_t byte;
-
-//struct block{
-//    byte blk[512];
-//};
-//
-//
-//struct segment{
-//    byte blk[1024];
-//};
-
-
-//struct word{
-//    byte blk[2];
-//};
-
-//const size_t BLOCKS_IN_SEGMENT = 2;
-//
-//const size_t segmentsCount = 10;
-
 class Filesystem {
-private:
-//    static constexpr byte FILESYSTEM_INFO_START_BLOCK = 1;
-//    static constexpr byte SEGMENTS_START_BLOCK = 6;
-//    static constexpr byte SEGMENT_LENGTH_IN_BLOCKS = 2;
-//    static constexpr uint16_t BLOCK_SIZE = 512;
-
 public:
     ISerializer &serializer;
     FilesystemInfo filesystemInfo {};

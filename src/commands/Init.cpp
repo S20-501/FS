@@ -1,4 +1,5 @@
 #include <sstream>
+#include <cstring>
 
 #include "Init.h"
 #include "../utils/utilFunctions.h"
