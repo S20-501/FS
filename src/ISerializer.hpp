@@ -13,7 +13,10 @@ class Filesystem;
 class ISerializer {
 public:
     virtual bool open(const std::string& filename) = 0;
+    virtual bool create(const std::string& filename) = 0;
     virtual void close() = 0;
+
+    virtual bool is_open() = 0;
 
     virtual void load(Filesystem &filesystem) = 0;
     virtual void load(FilesystemInfo &filesystemInfo) = 0;

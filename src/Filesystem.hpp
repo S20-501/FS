@@ -11,6 +11,7 @@
 #include "FileRecord.hpp"
 #include "FilesystemSegment.hpp"
 #include "ISerializer.hpp"
+#include "exceptions/FilesystemNotInitializedException.hpp"
 
 typedef std::uint8_t byte;
 
@@ -34,12 +35,10 @@ typedef std::uint8_t byte;
 
 class Filesystem {
 private:
-
-
-    static constexpr byte FILESYSTEM_INFO_START_BLOCK = 1;
-    static constexpr byte SEGMENTS_START_BLOCK = 6;
-    static constexpr byte SEGMENT_LENGTH_IN_BLOCKS = 2;
-    static constexpr uint16_t BLOCK_SIZE = 512;
+//    static constexpr byte FILESYSTEM_INFO_START_BLOCK = 1;
+//    static constexpr byte SEGMENTS_START_BLOCK = 6;
+//    static constexpr byte SEGMENT_LENGTH_IN_BLOCKS = 2;
+//    static constexpr uint16_t BLOCK_SIZE = 512;
 
 public:
     ISerializer &serializer;
@@ -49,12 +48,7 @@ public:
 public:
     explicit Filesystem(ISerializer &serializer) : serializer(serializer) {}
 
-    Filesystem(Filesystem &filesystem) = delete;
-//    : serializer(filesystem.serializer), filesystemInfo(filesystem.filesystemInfo) {
-//        std::copy(filesystem.filesystemSegment, filesystem.filesystemSegment, filesystemSegment);
-//
-//    }
-// TODO
+    Filesystem(Filesystem &filesystem) = delete; // can't copy serializer and info about filesystem
 
     Filesystem(Filesystem &&filesystem) noexcept
     : serializer(filesystem.serializer), filesystemInfo(filesystem.filesystemInfo) {
@@ -62,8 +56,7 @@ public:
         filesystem.filesystemSegment = nullptr;
     }
 
-//    Filesystem &operator =(const Filesystem &filesystem) = default;
-//    TODO
+    Filesystem &operator =(const Filesystem &filesystem) = delete; // can't copy serializer and info about filesystem
 
     Filesystem &operator =(Filesystem &&filesystem) noexcept {
         serializer = filesystem.serializer;
@@ -76,7 +69,10 @@ public:
     }
 
     void open(const std::string& filename){
-        serializer.open(filename);
+        if (!serializer.open(filename)){
+            throw FilesystemNotInitializedException();
+        }
+
         serializer.load(filesystemInfo);
 
         delete[] filesystemSegment;

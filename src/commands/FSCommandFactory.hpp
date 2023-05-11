@@ -7,8 +7,6 @@
 
 #include "CommandFactory.h"
 
-#include <utility>
-
 template<typename CommandClasses>
 class FSCommandFactory : public CommandFactory<CommandClasses> {
 private:

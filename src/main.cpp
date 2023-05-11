@@ -2,45 +2,26 @@
 #include <fstream>
 
 #include "../Monitor.h"
-#include "Filesystem.hpp"
 
-#include "commands/Init.h"
-#include "commands/Full.h"
-#include "commands/Empty.h"
-#include "commands/Enter.h"
-#include "commands/Copy.h"
-#include "commands/Move.h"
-#include "commands/Del.h"
-#include "commands/Squeeze.h"
-#include "commands/Help.h"
-#include "commands/FSCommandFactory.hpp"
+#include "commands/FSCommands.hpp"
 #include "BinSerializer.hpp"
+
+#include "exceptions/FilesystemNotInitializedException.hpp"
 
 //#define MONITOR_WITHFILE
 
 int main() {
-    BinSerializer binSerializer;
+    BinSerializer serializer;
 
-    auto fs = Filesystem(binSerializer);
+    auto filesystem = Filesystem(serializer);
 
     try {
-        fs.open("fs.bin");
-    } catch (char *e) {
-        // TODO: please run init
-        std::cerr << e << std::endl;
+        filesystem.open("fs.bin");
+    } catch (FilesystemNotInitializedException &e) {
+        std::cerr << e.what() << std::endl;
     }
 
-    auto commandFactory = FSCommandFactory<std::tuple<
-        Init
-//        Full,
-//        Empty,
-//        Enter,
-//        Copy,
-//        Move,
-//        Del,
-//        Squeeze,
-//        Help
-    >>(fs);
+    auto commandFactory = FSCommands(filesystem);
 
 #ifdef MONITOR_WITHFILE
     std::ifstream istream("input.txt");
@@ -60,7 +41,7 @@ int main() {
 
     monitor.run();
 
-    fs.close();
+    filesystem.close();
 
     return 0;
 }

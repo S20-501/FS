@@ -2,8 +2,7 @@
 
 #include "Init.h"
 #include "../utils/utilFunctions.h"
-
-//Init::Init() = default;
+#include "../exceptions/FileCannotCreate.hpp"
 
 std::string Init::getQuery(){
     return "init";
@@ -35,12 +34,15 @@ std::string Init::checkAmount(const Parser &parser) {
 std::string Init::setBlocks(const keyArgs_t &keys) {
     if(auto it = keys.find("blocks"); it != keys.end() || ((it = keys.find("b")) != keys.end())) {
         // convert to int
-        if(convertToNumber(it->second, blocks)) return BLOCKSCANTCONVERT;
+        int intBlocks = 0;
+        if(convertToNumber(it->second, intBlocks)) return BLOCKSCANTCONVERT;
 
         // check restrictions
-        if (blocks < 1 || 65535 < blocks) {
+        if (intBlocks < 1 || 65535 < intBlocks) {
             return BLOCKSRESTRICTED;
         }
+
+        blocks = static_cast<uint16_t>(intBlocks);
     } else {
         return NOBLOCKSVALUE;
     }
@@ -51,12 +53,15 @@ std::string Init::setBlocks(const keyArgs_t &keys) {
 std::string Init::setSegments(const keyArgs_t &keys) {
     if(auto it = keys.find("segments"); it != keys.end() || ((it = keys.find("s")) != keys.end())){
         // convert to int
-        if (convertToNumber(it->second, segments)) return SEGMENTSCANTCONVERT;
+        int intSegments = 0;
+        if (convertToNumber(it->second, intSegments)) return SEGMENTSCANTCONVERT;
 
         // check restrictions
-        if(segments < 1 || 31 < segments){
+        if(intSegments < 1 || 31 < intSegments){
             return SEGMENTSRESTRICTED;
         }
+
+        segments = static_cast<uint16_t>(intSegments);
     } else {
         return NOSEGMENTSVALUE;
     }
@@ -76,14 +81,20 @@ std::string Init::setLabel(posArgs_t &poss) {
 }
 
 std::string Init::run() {
-    static constexpr byte FILESYSTEM_INFO_START_BLOCK = 1;
+    if (!filesystem.serializer.is_open()){
+        filesystem.serializer.create("fs.bin");
+    }
+
+    if (!filesystem.serializer.is_open()){
+        throw FileCannotCreate();
+    }
+
     static constexpr byte SEGMENTS_START_BLOCK = 6;
     static constexpr byte SEGMENT_LENGTH_IN_BLOCKS = 2;
-    static constexpr uint16_t BLOCK_SIZE = 512;
 
-    if (filesystem->filesystemInfo.segmentsCount != 0) delete[] filesystem->filesystemSegment;
+    if (filesystem.filesystemInfo.segmentsCount != 0) delete[] filesystem.filesystemSegment;
 
-    filesystem->filesystemSegment = new FilesystemSegment[segments];
+    filesystem.filesystemSegment = new FilesystemSegment[segments];
     // TODO: not enough memory
 
 
@@ -92,34 +103,28 @@ std::string Init::run() {
     uint16_t blocksPerSegment = blocks / segments;
 
 
-    filesystem->filesystemInfo.segmentsCount = segments;
-    filesystem->filesystemInfo.blocksCount = blocks;
-    strncpy(filesystem->filesystemInfo.volumeLabel, label.c_str(), 11);
-
-//    filesystem->serializer.save(filesystem->filesystemInfo);
+    filesystem.filesystemInfo.segmentsCount = segments;
+    filesystem.filesystemInfo.blocksCount = blocks;
+    strncpy(filesystem.filesystemInfo.volumeLabel, label.c_str(), 11);
 
     for (int i = 0; i < segments; i++){
-        filesystem->filesystemSegment[i].fileRecord[0].recordType = RECORDS_END;
-        filesystem->filesystemSegment[i].segmentHeader.segmentsCount = segments;
-        filesystem->filesystemSegment[i].segmentHeader.filesStart = currentSegmentFilesStart;
+        filesystem.filesystemSegment[i].fileRecord[0].recordType = RECORDS_END;
+        filesystem.filesystemSegment[i].segmentHeader.segmentsCount = segments;
+        filesystem.filesystemSegment[i].segmentHeader.filesStart = currentSegmentFilesStart;
 
         currentSegmentFilesStart += blocksPerSegment;
 
         for (int j = 0; j < 63; ++j) {
-            filesystem->filesystemSegment[i].fileRecord[j].blockCount = static_cast<uint16_t>(j);
+            filesystem.filesystemSegment[i].fileRecord[j].blockCount = static_cast<uint16_t>(j);
         }
-
-//        filesystem->serializer.save(filesystem->filesystemSegment[i], i);
     }
 
-
-
-    filesystem->serializer.save(*filesystem);
+    filesystem.serializer.save(filesystem);
 // TODO
 
     std::stringstream str;
     str << "FSinit command executed, blocks: \"" << blocks <<
-        "\", segments: \"" << segments << "\", label: \"" << label << "\", s: \"" << filesystem->filesystemInfo.volumeLabel << "\"";
+        "\", segments: \"" << segments << "\", label: \"" << label << "\", s: \"" << filesystem.filesystemInfo.volumeLabel << "\"";
     return str.str();
 }
 
