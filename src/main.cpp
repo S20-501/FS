@@ -19,6 +19,9 @@ int main() {
         filesystem.open("fs.bin");
     } catch (FilesystemNotInitializedException &e) {
         std::cerr << e.what() << std::endl;
+    } catch (std::bad_alloc &e){
+        std::cerr << "Not enough memory." << std::endl;
+        return -1;
     }
 
     auto commandFactory = FSCommands(filesystem);
@@ -39,7 +42,13 @@ int main() {
     Monitor monitor(commandFactory, std::cin, std::cout, false);
 #endif //MONITOR_WITHFILE
 
-    monitor.run();
+    try {
+        monitor.run();
+    } catch (std::bad_alloc &e){
+        std::cerr << "Not enough memory." << std::endl;
+        filesystem.close();
+        return -1;
+    }
 
     filesystem.close();
 

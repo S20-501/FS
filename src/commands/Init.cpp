@@ -95,8 +95,6 @@ std::string Init::run() {
     if (filesystem.filesystemInfo.segmentsCount != 0) delete[] filesystem.filesystemSegment;
 
     filesystem.filesystemSegment = new FilesystemSegment[segments];
-    // TODO: not enough memory
-
 
     uint16_t fsHeaderSize = SEGMENTS_START_BLOCK + segments + SEGMENT_LENGTH_IN_BLOCKS;
     uint16_t currentSegmentFilesStart = fsHeaderSize;
