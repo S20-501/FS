@@ -51,7 +51,6 @@ public:
         load(filesystem.filesystemInfo);
 
         filesystem.filesystemSegment = new FilesystemSegment[filesystem.filesystemInfo.segmentsCount];
-        // TODO: not enough memory
 
         for (int i = 0; i < filesystem.filesystemInfo.segmentsCount; i++){
             load(filesystem.filesystemSegment[i], i);
@@ -64,6 +63,7 @@ public:
         file.read(reinterpret_cast<char *>(&filesystemInfo), sizeof(filesystemInfo));
 
         if (filesystemInfo.segmentsCount > 31) {
+            // TODO: unexpected end of file
             throw "e";
         }
     }

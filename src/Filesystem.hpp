@@ -77,8 +77,6 @@ public:
 
         delete[] filesystemSegment;
         filesystemSegment = new FilesystemSegment[filesystemInfo.segmentsCount];
-        // TODO: not enough memory
-
 
         for (int i = 0; i < filesystemInfo.segmentsCount; i++){
             serializer.load(filesystemSegment[i], i);
