@@ -5,42 +5,12 @@
 #ifndef FS_FILESYSTEM_HPP
 #define FS_FILESYSTEM_HPP
 
-#include <fstream>
-#include <cstring>
 #include "FilesystemInfo.hpp"
-#include "FileRecord.hpp"
 #include "FilesystemSegment.hpp"
 #include "ISerializer.hpp"
-
-typedef std::uint8_t byte;
-
-//struct block{
-//    byte blk[512];
-//};
-//
-//
-//struct segment{
-//    byte blk[1024];
-//};
-
-
-//struct word{
-//    byte blk[2];
-//};
-
-//const size_t BLOCKS_IN_SEGMENT = 2;
-//
-//const size_t segmentsCount = 10;
+#include "exceptions/FilesystemNotInitializedException.hpp"
 
 class Filesystem {
-private:
-
-
-    static constexpr byte FILESYSTEM_INFO_START_BLOCK = 1;
-    static constexpr byte SEGMENTS_START_BLOCK = 6;
-    static constexpr byte SEGMENT_LENGTH_IN_BLOCKS = 2;
-    static constexpr uint16_t BLOCK_SIZE = 512;
-
 public:
     ISerializer &serializer;
     FilesystemInfo filesystemInfo {};
@@ -49,12 +19,7 @@ public:
 public:
     explicit Filesystem(ISerializer &serializer) : serializer(serializer) {}
 
-    Filesystem(Filesystem &filesystem) = delete;
-//    : serializer(filesystem.serializer), filesystemInfo(filesystem.filesystemInfo) {
-//        std::copy(filesystem.filesystemSegment, filesystem.filesystemSegment, filesystemSegment);
-//
-//    }
-// TODO
+    Filesystem(Filesystem &filesystem) = delete; // can't copy serializer and info about filesystem
 
     Filesystem(Filesystem &&filesystem) noexcept
     : serializer(filesystem.serializer), filesystemInfo(filesystem.filesystemInfo) {
@@ -62,8 +27,7 @@ public:
         filesystem.filesystemSegment = nullptr;
     }
 
-//    Filesystem &operator =(const Filesystem &filesystem) = default;
-//    TODO
+    Filesystem &operator =(const Filesystem &filesystem) = delete; // can't copy serializer and info about filesystem
 
     Filesystem &operator =(Filesystem &&filesystem) noexcept {
         serializer = filesystem.serializer;
@@ -76,13 +40,14 @@ public:
     }
 
     void open(const std::string& filename){
-        serializer.open(filename);
+        if (!serializer.open(filename)){
+            throw FilesystemNotInitializedException();
+        }
+
         serializer.load(filesystemInfo);
 
         delete[] filesystemSegment;
         filesystemSegment = new FilesystemSegment[filesystemInfo.segmentsCount];
-        // TODO: not enough memory
-
 
         for (int i = 0; i < filesystemInfo.segmentsCount; i++){
             serializer.load(filesystemSegment[i], i);

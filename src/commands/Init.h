@@ -6,7 +6,7 @@
 
 class Init : public BaseCommand {
 private:
-    Filesystem *filesystem;
+    Filesystem &filesystem;
     uint16_t blocks = 0;
     uint16_t segments = 0;
     std::string label;
@@ -31,7 +31,7 @@ private:
 protected:
     std::string help() override;
 public:
-    explicit Init(Filesystem *filesystem) : filesystem(filesystem), label(){ }
+    explicit Init(Filesystem *filesystem) : filesystem(*filesystem), label(){ }
 
     static std::string getQuery();
 

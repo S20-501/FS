@@ -5,6 +5,7 @@
 #ifndef FS_BINSERIALIZER_HPP
 #define FS_BINSERIALIZER_HPP
 
+#include "exceptions/FileNotFoundException.hpp"
 
 class BinSerializer : public ISerializer{
 private:
@@ -15,35 +16,31 @@ private:
     static constexpr byte SEGMENT_LENGTH_IN_BLOCKS = 2;
     static constexpr uint16_t BLOCK_SIZE = 512;
 public:
-//    Filesystem(ISerializer &serializer) : serializer(serializer) {}
-//
-//    Filesystem(Filesystem &filesystem) = delete;
-//
-//    Filesystem(Filesystem &&filesystem) noexcept : file() {
-////        file = std::move(filesystem.file);
-//
-//        filesystemSegment = filesystem.filesystemSegment;
-//        filesystem.filesystemSegment = nullptr;
-//    }
-//
-//    Filesystem &operator =(const Filesystem &filesystem) = delete;
-//
-//    Filesystem &operator =(Filesystem &&filesystem) noexcept {
-//        file = std::move(filesystem.file);
-//
-//        filesystemSegment = filesystem.filesystemSegment;
-//        filesystem.filesystemSegment = nullptr;
-//
-//        return *this;
-//    }
+    BinSerializer() : file() {}
 
+    explicit BinSerializer(const std::string &filename) : file(filename) {}
+
+    BinSerializer(BinSerializer &binSerializer) = delete;
+
+    BinSerializer(BinSerializer &&binSerializer) noexcept : file() {
+        file = std::move(binSerializer.file);
+    }
+
+    BinSerializer &operator =(const BinSerializer &filesystem) = delete;
+
+    BinSerializer &operator =(BinSerializer &&binSerializer) noexcept {
+        file = std::move(binSerializer.file);
+        return *this;
+    }
 
     bool open(const std::string& filename) override{
         file.open(filename);
 
         if (!file.is_open()) {
-            throw "File mnort founfd, please init";
+            return false;
         }
+
+        return true;
     }
 
     void close() override{
@@ -54,7 +51,6 @@ public:
         load(filesystem.filesystemInfo);
 
         filesystem.filesystemSegment = new FilesystemSegment[filesystem.filesystemInfo.segmentsCount];
-        // TODO: not enough memory
 
         for (int i = 0; i < filesystem.filesystemInfo.segmentsCount; i++){
             load(filesystem.filesystemSegment[i], i);
@@ -67,6 +63,7 @@ public:
         file.read(reinterpret_cast<char *>(&filesystemInfo), sizeof(filesystemInfo));
 
         if (filesystemInfo.segmentsCount > 31) {
+            // TODO: unexpected end of file
             throw "e";
         }
     }
@@ -78,6 +75,10 @@ public:
     }
 
     void load(FileRecord &fileRecord, off_t segmentNumber, off_t fileNumber) override{
+        (void) fileRecord;
+        (void) segmentNumber;
+        (void) fileNumber;
+
         throw "Not implemented";
     }
 
@@ -107,7 +108,25 @@ public:
     }
 
     void save(FileRecord &fileRecord, off_t segmentNumber, off_t fileNumber) override{
+        (void) fileRecord;
+        (void) segmentNumber;
+        (void) fileNumber;
+
         throw "Not implemented";
+    }
+
+    bool is_open() override {
+        return file.is_open();
+    }
+
+    bool create(const std::string &filename) override {
+        file.open(filename, std::ios::in | std::ios::out | std::ios::trunc);
+
+        if (!file.is_open()) {
+            return false;
+        }
+
+        return true;
     }
 };
 
