@@ -9,29 +9,35 @@
 #include <vector>
 #include <string>
 #include <sstream>
+
+#include "Filesystem.hpp"
 #include "FileRecord.hpp"
 #include "FilesystemInfo.hpp"
 
 class Empty{
 private:
-    uint16_t fileRecordsCount;
-    uint16_t tomSize;
-    char* tomLabel;
+    Filesystem* filesystem;
     std::vector<std::string> flags;
-    FileRecord* fileRecords;
 
 public:
-    Empty(FileRecord* fileRecords, uint16_t fileRecordsCount, char* tomLabel, uint16_t tomSize, std::vector<std::string> flags) {
-        this->fileRecords = fileRecords;
-        this->fileRecordsCount = fileRecordsCount;
-        this->tomLabel = tomLabel;
-        this->tomSize = tomSize;
+    Empty(Filesystem& filesystem, std::vector<std::string> flags) {
+        this->filesystem = &filesystem;
         this->flags = flags;
     }
     std::string run() {
         bool shouldPrintFree = ( std::find(flags.begin(), flags.end(), "empty") != flags.end() ) ||
                                ( std::find(flags.begin(), flags.end(), "e") != flags.end() );
         std::stringstream ss;
+
+        ss << "Free blocks: " << filesystem->filesystemInfo.blocksCount << "\n";
+        // disk size?
+        ss << "Segments count: " << filesystem->filesystemInfo.segmentsCount << "\n";
+        for (int i = 0; i < filesystem->filesystemInfo.segmentsCount; ++i) {
+            ss << "Segment " << (i + 1) << ", " <<
+                "records count: " <<
+                filesystem->filesystemSegment[i].segmentHeader.segmentsUsed <<
+                "/" << filesystem->filesystemSegment[i].segmentHeader.segmentsCount << "\n";
+        }
 
     }
 };
