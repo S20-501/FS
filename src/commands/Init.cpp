@@ -5,6 +5,25 @@
 #include "../utils/utilFunctions.h"
 #include "../exceptions/FileCannotCreate.hpp"
 
+bool isASCII(const std::string &str){
+    return !std::any_of(std::begin(str), std::end(str), [](const char character) -> bool {
+        return character < 0;
+    });
+}
+
+template<class Num_t>
+bool convertToNumber(const std::string &strValue, Num_t& numberVar){
+    try {
+        numberVar = std::stoi(strValue);
+    } catch (std::out_of_range const &ex) {
+        return true;
+    } catch (std::invalid_argument const &ex) {
+        return true;
+    }
+
+    return false;
+}
+
 std::string Init::getQuery(){
     return "init";
 }
