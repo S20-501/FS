@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "../Monitor.h"
+#include "Monitor.h"
 
 #include "commands/FSCommands.hpp"
 #include "BinSerializer.hpp"
@@ -24,7 +24,17 @@ int main() {
         return -1;
     }
 
-    auto commandFactory = FSCommands(filesystem);
+    auto commandFactory = FSCommandFactory<std::tuple<
+        Init
+//        Full,
+//        Empty,
+//        Enter,
+//        Copy,
+//        Move,
+//        Del,
+//        Squeeze,
+//        Help
+    >> (filesystem);
 
 #ifdef MONITOR_WITHFILE
     std::ifstream istream("input.txt");
