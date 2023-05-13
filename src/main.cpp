@@ -24,17 +24,7 @@ int main() {
         return -1;
     }
 
-    auto commandFactory = FSCommandFactory<std::tuple<
-        Init
-//        Full,
-//        Empty,
-//        Enter,
-//        Copy,
-//        Move,
-//        Del,
-//        Squeeze,
-//        Help
-    >> (filesystem);
+    auto commandFactory = FSCommands(filesystem);
 
 #ifdef MONITOR_WITHFILE
     std::ifstream istream("input.txt");
