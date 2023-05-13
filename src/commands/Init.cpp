@@ -2,8 +2,8 @@
 #include <cstring>
 
 #include "Init.h"
-#include "../utils/utilFunctions.h"
 #include "../exceptions/FileCannotCreate.hpp"
+#include "../UtilsFunctions.hpp"
 
 std::string Init::getQuery(){
     return "init";
@@ -36,7 +36,7 @@ std::string Init::setBlocks(const keyArgs_t &keys) {
     if(auto it = keys.find("blocks"); it != keys.end() || ((it = keys.find("b")) != keys.end())) {
         // convert to int
         int intBlocks = 0;
-        if(convertToNumber(it->second, intBlocks)) return BLOCKSCANTCONVERT;
+        if(UtilsFunctions::convertToNumber(it->second, intBlocks)) return BLOCKSCANTCONVERT;
 
         // check restrictions
         if (intBlocks < 1 || 65535 < intBlocks) {
@@ -55,7 +55,7 @@ std::string Init::setSegments(const keyArgs_t &keys) {
     if(auto it = keys.find("segments"); it != keys.end() || ((it = keys.find("s")) != keys.end())){
         // convert to int
         int intSegments = 0;
-        if (convertToNumber(it->second, intSegments)) return SEGMENTSCANTCONVERT;
+        if (UtilsFunctions::convertToNumber(it->second, intSegments)) return SEGMENTSCANTCONVERT;
 
         // check restrictions
         if(intSegments < 1 || 31 < intSegments){
@@ -74,7 +74,7 @@ std::string Init::setLabel(posArgs_t &poss) {
     label = poss.empty() ? DEFAULTLABEL : std::move(poss.back()); // label is optional
     poss.pop_back();
 
-    if(label.size() > 10 || !isASCII(label)){
+    if(label.size() > 10 || !UtilsFunctions::isASCII(label)){
         return LABELINCORRECT;
     }
 

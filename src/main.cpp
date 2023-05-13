@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "../Monitor.h"
+#include "Monitor.h"
 
 #include "commands/FSCommands.hpp"
 #include "BinSerializer.hpp"

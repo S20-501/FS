@@ -5,7 +5,7 @@
 #ifndef MONITOR_MYCOMMANDFACTORY_HPP
 #define MONITOR_MYCOMMANDFACTORY_HPP
 
-#include "CommandFactory.h"
+#include "../commands/CommandFactory.hpp"
 
 template<typename CommandClasses>
 class FSCommandFactory : public CommandFactory<CommandClasses> {
@@ -16,7 +16,7 @@ public:
     explicit FSCommandFactory(Filesystem &filesystem) : CommandFactory<CommandClasses>(), filesystem(filesystem){}
 
     std::shared_ptr<BaseCommand> getCommand(const std::string &commandString) override {
-        return CommandFactory<CommandClasses>().template construct<0, CommandClasses>(commandString, &filesystem);
+        return CommandFactory<CommandClasses>::construct(commandString, &filesystem);
     }
 };
 
