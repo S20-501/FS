@@ -18,10 +18,10 @@
 #include "FSCommandFactory.hpp"
 
 typedef FSCommandFactory<std::tuple<
-    Init
+    Init,
 //        Full,
 //        Empty,
-//        Enter,
+        Enter
 //        Copy,
 //        Move,
 //        Del,

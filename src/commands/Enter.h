@@ -1,10 +1,12 @@
 #ifndef MAIN_ENTER_H
 #define MAIN_ENTER_H
 
-#include "../commands/BaseCommand.h"
+#include "BaseCommand.h"
+#include "../Filesystem.hpp"
 
 class Enter : public BaseCommand {
 private:
+    Filesystem &filesystem;
     int length = 0;
     std::string filename;
 
@@ -22,7 +24,7 @@ private:
 protected:
     std::string help() override;
 public:
-    Enter();
+    explicit Enter(Filesystem *filesystem) : filesystem(*filesystem), filename(){ }
 
     static std::string getQuery();
 

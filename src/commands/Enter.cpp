@@ -1,9 +1,11 @@
 #include <sstream>
 
 #include "Enter.h"
-#include "utils/utilFunctions.h"
+#include "../utils/utilFunctions.h"
+#include "../exceptions/FileCannotCreate.hpp"
+#include "../UtilsFunctions.hpp"
 
-Enter::Enter() = default;
+//Enter::Enter()
 
 std::string Enter::getQuery(){
     return "enter";
@@ -34,7 +36,7 @@ std::string Enter::checkAmount(const Parser &parser) {
 std::string Enter::setLength(const keyArgs_t &keys) {
     if(auto it = keys.find("length"); it != keys.end() || ((it = keys.find("l")) != keys.end())) {
         // convert to int
-        if(convertToNumber(it->second, length)) return LENGTHCANTCONVERT;
+        if(UtilsFunctions::convertToNumber(it->second, length)) return LENGTHCANTCONVERT;
 
         // check restrictions
         if(length < 1 || 65535 < length){
@@ -51,7 +53,7 @@ std::string Enter::setFilename(posArgs_t &poss) {
     filename = std::move(poss.back());
     poss.pop_back();
 
-    if(filename.size() > 10 || !isASCII(filename)){
+    if(filename.size() > 10 || !UtilsFunctions::isASCII(filename)){
         return INCORRECTFILENAME;
     }
 
