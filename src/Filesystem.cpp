@@ -3,19 +3,37 @@
 //
 
 #include "Filesystem.hpp"
+#include "exceptions/UnexpectedEndOfFileException.hpp"
+#include "exceptions/InvalidFileFormatException.hpp"
+#include "exceptions/FilesystemCorruptedException.hpp"
+#include "exceptions/FileNotFoundException.hpp"
 
 void Filesystem::open(const std::string &filename) {
-    if (!serializer.open(filename)){
+    try {
+        serializer.open(filename);
+    } catch (FileNotFoundException &e){
         throw FilesystemNotInitializedException();
     }
 
-    serializer.load(filesystemInfo);
+    try {
+        serializer.load(filesystemInfo);
+    } catch (UnexpectedEndOfFileException &e) {
+        throw FilesystemCorruptedException();
+    } catch (InvalidFileFormatException &e) {
+        throw FilesystemCorruptedException();
+    }
 
     delete[] filesystemSegment;
     filesystemSegment = new FilesystemSegment[filesystemInfo.segmentsCount];
 
     for (int i = 0; i < filesystemInfo.segmentsCount; i++){
-        serializer.load(filesystemSegment[i], i);
+        try {
+            serializer.load(filesystemSegment[i], i);
+        } catch (UnexpectedEndOfFileException &e) {
+            throw FilesystemCorruptedException();
+        } catch (InvalidFileFormatException &e) {
+            throw FilesystemCorruptedException();
+        }
     }
 }
 

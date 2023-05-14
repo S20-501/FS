@@ -6,7 +6,8 @@
 #include "commands/FSCommands.hpp"
 #include "serializer/BinSerializer.hpp"
 
-#include "exceptions/FilesystemNotInitializedException.hpp"
+#include "exceptions/FilesystemException.hpp"
+#include "exceptions/FileWriteException.hpp"
 
 //#define MONITOR_WITHFILE
 
@@ -17,11 +18,13 @@ int main() {
 
     try {
         filesystem.open("fs.bin");
-    } catch (FilesystemNotInitializedException &e) {
+    } catch (FilesystemException &e) {
         std::cerr << e.what() << std::endl;
     } catch (std::bad_alloc &e){
         std::cerr << "Not enough memory." << std::endl;
         return -1;
+    } catch (FileWriteException &e) {
+        std::cerr << "Can't save filesystem state. Check permissions or free space on a disk." << std::endl;
     }
 
     auto commandFactory = FSCommands(filesystem);
@@ -48,6 +51,14 @@ int main() {
         std::cerr << "Not enough memory." << std::endl;
         filesystem.close();
         return -1;
+    } catch (FilesystemException &e) {
+        std::cerr << e.what() << std::endl;
+        filesystem.close();
+        return -2;
+    } catch (FileWriteException &e) {
+        std::cerr << "Can't save filesystem state. Check permissions or free space on a disk." << std::endl;
+        filesystem.close();
+        return -3;
     }
 
     filesystem.close();

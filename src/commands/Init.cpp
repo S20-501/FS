@@ -86,10 +86,6 @@ std::string Init::run() {
         filesystem.serializer.create("fs.bin");
     }
 
-    if (!filesystem.serializer.is_open()){
-        throw FileCannotCreate();
-    }
-
     static constexpr byte SEGMENTS_START_BLOCK = 6;
     static constexpr byte SEGMENT_LENGTH_IN_BLOCKS = 2;
 

@@ -35,8 +35,8 @@ public:
         return *this;
     }
 
-    bool open(const std::string& filename) override;
-    bool create(const std::string &filename) override;
+    void open(const std::string& filename) override;
+    void create(const std::string &filename) override;
     void close() override;
 
     bool is_open() override;

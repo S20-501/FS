@@ -7,15 +7,14 @@
 #include "exceptions/InvalidFileFormatException.hpp"
 #include "exceptions/NotImplementedException.hpp"
 #include "exceptions/FileWriteException.hpp"
+#include "exceptions/FileCannotCreate.hpp"
 
-bool BinSerializer::open(const std::string &filename) {
+void BinSerializer::open(const std::string &filename) {
     file.open(filename);
 
     if (!file.is_open()) {
-        return false;
+        throw FileNotFoundException();
     }
-
-    return true;
 }
 
 void BinSerializer::close() {
@@ -100,12 +99,10 @@ bool BinSerializer::is_open() {
     return file.is_open();
 }
 
-bool BinSerializer::create(const std::string &filename) {
+void BinSerializer::create(const std::string &filename) {
     file.open(filename, std::ios::in | std::ios::out | std::ios::trunc);
 
     if (!file.is_open()) {
-        return false;
+        throw FileCannotCreate();
     }
-
-    return true;
 }
