@@ -22,11 +22,16 @@ std::string Init::checkAndAssemble(Parser &parser) {
 }
 
 std::string Init::checkAmount(const Parser &parser) {
-    if(parser.getKeyArgs().size() != 2){
-        return WRONGKEYSAMOUNT;
+    if(parser.getKeyArgs().size() > 2){
+        return TOO_MANY_ARGS;
     }
+
+    if(parser.getKeyArgs().size() < 2){
+        return NOT_ENOUGH_ARGS;
+    }
+
     if(parser.getPosArgs().size() > 1){
-        return WRONGPOSSAMOUNT;
+        return TOO_MANY_ARGS;
     }
 
     return "";
@@ -36,16 +41,16 @@ std::string Init::setBlocks(const keyArgs_t &keys) {
     if(auto it = keys.find("blocks"); it != keys.end() || ((it = keys.find("b")) != keys.end())) {
         // convert to int
         int intBlocks = 0;
-        if(MonCom::convertToNumber(it->second, intBlocks)) return BLOCKSCANTCONVERT;
+        if(MonCom::convertToNumber(it->second, intBlocks)) return BLOCKS_CANT_CONVERT;
 
         // check restrictions
         if (intBlocks < 1 || 65535 < intBlocks) {
-            return BLOCKSRESTRICTED;
+            return BLOCKS_RESTRICTED;
         }
 
         blocks = static_cast<uint16_t>(intBlocks);
     } else {
-        return NOBLOCKSVALUE;
+        return NO_BLOCKS_VALUE;
     }
 
     return "";
@@ -55,16 +60,16 @@ std::string Init::setSegments(const keyArgs_t &keys) {
     if(auto it = keys.find("segments"); it != keys.end() || ((it = keys.find("s")) != keys.end())){
         // convert to int
         int intSegments = 0;
-        if (MonCom::convertToNumber(it->second, intSegments)) return SEGMENTSCANTCONVERT;
+        if (MonCom::convertToNumber(it->second, intSegments)) return SEGMENTS_CANT_CONVERT;
 
         // check restrictions
         if(intSegments < 1 || 31 < intSegments){
-            return SEGMENTSRESTRICTED;
+            return SEGMENTS_RESTRICTED;
         }
 
         segments = static_cast<uint16_t>(intSegments);
     } else {
-        return NOSEGMENTSVALUE;
+        return NO_SEGMENTS_VALUE;
     }
 
     return "";
@@ -72,14 +77,18 @@ std::string Init::setSegments(const keyArgs_t &keys) {
 
 std::string Init::setLabel(posArgs_t &poss) {
     if (poss.empty()){
-        label = DEFAULTLABEL;
+        label = DEFAULT_LABEL;
     } else {
         label = std::move(poss.back());
         poss.pop_back();
     }
 
-    if(label.size() > 10 || !MonCom::isASCII(label)){
-        return LABELINCORRECT;
+    if(!MonCom::isASCII(label)){
+        return LABEL_INCORRECT;
+    }
+
+    if(label.size() > 10){
+        return LABEL_TOO_LONG;
     }
 
     return "";
@@ -119,14 +128,27 @@ std::string Init::run() {
     }
 
     filesystem.serializer.save(filesystem);
-// TODO
 
     std::stringstream str;
-    str << "FSinit command executed, blocks: \"" << blocks <<
-        "\", segments: \"" << segments << "\", label: \"" << label << "\", s: \"" << filesystem.filesystemInfo.volumeLabel << "\"";
+    str << "Filesystem created successfully.";
     return str.str();
 }
 
 std::string Init::help() {
-    return "FSinit help\ninit help second line";
+    return "usage: init -b <blocks> -s <segments> \"LABEL\"";
+}
+
+std::string Init::processQuery(Parser &parser) {
+    auto poss = parser.getBoolArgs();
+    std::string resultMessage;
+
+    if(std::find(std::begin(poss), std::end(poss), "help") != std::end(poss)){
+        return help();
+    } else if(resultMessage = checkAndAssemble(parser); resultMessage.empty()) { // parser becomes invalid here, if no error
+        resultMessage = run();
+    } else{
+        resultMessage = COMMON_ERROR_MESSAGE + resultMessage;
+    }
+
+    return resultMessage;
 }

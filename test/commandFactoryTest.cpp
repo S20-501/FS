@@ -1,20 +1,17 @@
 #include <gtest/gtest.h>
 
-#include "../src/commands/FilesystemBaseCommandFactory.hpp"
-#include "../src/commands/Init.hpp"
-#include "../src/Filesystem.hpp"
-
+#include "serializer/BinSerializer.hpp"
+#include "Filesystem.hpp"
+#include "commands/FSCommands.hpp"
 
 namespace{
     TEST(parseCommand, inittype){
-        Filesystem fs;
+        BinSerializer serializer;
 
-//        std::ostream &ostream = std::cout;
+        auto filesystem = Filesystem(serializer);
+
         std::string query = "init";
 
-        auto command = FS::FilesystemBaseCommandFactory::getCommand(fs, query, 1, 2, "TEST");
-//        EXPECT_EQ(command->getCommandType(), CommandsList::INIT);
-
-        command->execute();
+        auto command = FSCommands(filesystem).getCommand(query);
     }
 }

@@ -47,6 +47,9 @@ int main() {
     Monitor monitor(commandFactory, std::cin, std::cout, false);
 #endif //MONITOR_WITHFILE
 
+    monitor.setPrompt("FS> ");
+    monitor.setExitMessage("change da world\nmy final message. Goodb ye.");
+
     try {
         monitor.run();
     } catch (std::bad_alloc &e){
