@@ -19,7 +19,7 @@
 
 typedef FSCommandFactory<std::tuple<
     Init,
-//        Full,
+    Full,
 //        Empty,
     Enter
 //        Copy,
