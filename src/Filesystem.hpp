@@ -5,9 +5,9 @@
 #ifndef FS_FILESYSTEM_HPP
 #define FS_FILESYSTEM_HPP
 
-#include "FilesystemInfo.hpp"
-#include "FilesystemSegment.hpp"
-#include "ISerializer.hpp"
+#include "dto/FilesystemInfo.hpp"
+#include "dto/FilesystemSegment.hpp"
+#include "serializer/ISerializer.hpp"
 #include "exceptions/FilesystemNotInitializedException.hpp"
 
 class Filesystem {
