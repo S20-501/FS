@@ -5,7 +5,9 @@
 #ifndef FS_BINSERIALIZER_HPP
 #define FS_BINSERIALIZER_HPP
 
+#include <fstream>
 #include "exceptions/FileNotFoundException.hpp"
+#include "serializer/ISerializer.hpp"
 
 class BinSerializer : public ISerializer{
 private:
@@ -33,102 +35,21 @@ public:
         return *this;
     }
 
-    bool open(const std::string& filename) override{
-        file.open(filename);
+    bool open(const std::string& filename) override;
+    bool create(const std::string &filename) override;
+    void close() override;
 
-        if (!file.is_open()) {
-            return false;
-        }
+    bool is_open() override;
 
-        return true;
-    }
+    void load(Filesystem &filesystem) override;
+    void load(FilesystemInfo &filesystemInfo) override;
+    void load(FilesystemSegment &filesystemSegment, off_t segmentNumber) override;
+    void load(FileRecord &fileRecord, off_t segmentNumber, off_t fileNumber) override;
 
-    void close() override{
-        file.close();
-    }
-
-    void load(Filesystem &filesystem) override{
-        load(filesystem.filesystemInfo);
-
-        filesystem.filesystemSegment = new FilesystemSegment[filesystem.filesystemInfo.segmentsCount];
-
-        for (int i = 0; i < filesystem.filesystemInfo.segmentsCount; i++){
-            load(filesystem.filesystemSegment[i], i);
-            // TODO: unexpected end of file
-        }
-    }
-
-    void load(FilesystemInfo &filesystemInfo) override{
-        file.seekg(FILESYSTEM_INFO_START_BLOCK * BLOCK_SIZE, std::ios_base::beg);
-        file.read(reinterpret_cast<char *>(&filesystemInfo), sizeof(filesystemInfo));
-
-        if (filesystemInfo.segmentsCount > 31) {
-            // TODO: unexpected end of file
-            throw "e";
-        }
-    }
-
-    void load(FilesystemSegment &filesystemSegment, off_t segmentNumber) override{
-        file.seekg((SEGMENTS_START_BLOCK + segmentNumber) * SEGMENT_LENGTH_IN_BLOCKS * BLOCK_SIZE, std::ios_base::beg);
-        file.read(reinterpret_cast<char *>(&filesystemSegment), sizeof(filesystemSegment));
-        // TODO: unexpected end of file
-    }
-
-    void load(FileRecord &fileRecord, off_t segmentNumber, off_t fileNumber) override{
-        (void) fileRecord;
-        (void) segmentNumber;
-        (void) fileNumber;
-
-        throw "Not implemented";
-    }
-
-    void save(Filesystem &filesystem) override{
-        file.clear();
-        // TODO: clear error bits in other place of code
-        save(filesystem.filesystemInfo);
-
-        // TODO: not enough memory
-
-        for (int i = 0; i < filesystem.filesystemInfo.segmentsCount; i++){
-            save(filesystem.filesystemSegment[i], i);
-        }
-
-        file.flush();
-    }
-
-    void save(FilesystemInfo &filesystemInfo) override{
-        file.seekp(FILESYSTEM_INFO_START_BLOCK * BLOCK_SIZE, std::ios_base::beg);
-        file.write(reinterpret_cast<const char *>(&filesystemInfo), sizeof(filesystemInfo));
-    }
-
-    void save(FilesystemSegment &filesystemSegment, off_t segmentNumber) override{
-        file.seekp((SEGMENTS_START_BLOCK + segmentNumber) * SEGMENT_LENGTH_IN_BLOCKS * BLOCK_SIZE, std::ios_base::beg);
-        file.write(reinterpret_cast<const char *>(&filesystemSegment), sizeof(filesystemSegment));
-        // TODO: not enough memory
-    }
-
-    void save(FileRecord &fileRecord, off_t segmentNumber, off_t fileNumber) override{
-        (void) fileRecord;
-        (void) segmentNumber;
-        (void) fileNumber;
-
-        throw "Not implemented";
-    }
-
-    bool is_open() override {
-        return file.is_open();
-    }
-
-    bool create(const std::string &filename) override {
-        file.open(filename, std::ios::in | std::ios::out | std::ios::trunc);
-
-        if (!file.is_open()) {
-            return false;
-        }
-
-        return true;
-    }
+    void save(Filesystem &filesystem) override;
+    void save(FilesystemInfo &filesystemInfo) override;
+    void save(FilesystemSegment &filesystemSegment, off_t segmentNumber) override;
+    void save(FileRecord &fileRecord, off_t segmentNumber, off_t fileNumber) override;
 };
-
 
 #endif //FS_BINSERIALIZER_HPP

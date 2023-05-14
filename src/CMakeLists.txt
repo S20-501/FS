@@ -34,5 +34,5 @@ include_directories(.)
 # make commands directory visible in cmake
 add_subdirectory(commands) # includes adding util funcs
 
-add_executable(FS_main main.cpp)
+add_executable(FS_main main.cpp Filesystem.cpp serializer/BinSerializer.cpp)
 target_link_libraries(FS_main monitor FSCommands)
