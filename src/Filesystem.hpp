@@ -5,10 +5,14 @@
 #ifndef FS_FILESYSTEM_HPP
 #define FS_FILESYSTEM_HPP
 
+#include <string>
+
 #include "dto/FilesystemInfo.hpp"
 #include "dto/FilesystemSegment.hpp"
 #include "serializer/ISerializer.hpp"
 #include "exceptions/FilesystemNotInitializedException.hpp"
+
+class ISerializer;
 
 class Filesystem {
 public:
@@ -29,34 +33,11 @@ public:
 
     Filesystem &operator =(const Filesystem &filesystem) = delete; // can't copy serializer and info about filesystem
 
-    Filesystem &operator =(Filesystem &&filesystem) noexcept {
-        serializer = filesystem.serializer;
-        filesystemInfo = filesystem.filesystemInfo;
+    Filesystem &operator =(Filesystem &&filesystem) noexcept;
 
-        filesystemSegment = filesystem.filesystemSegment;
-        filesystem.filesystemSegment = nullptr;
+    void open(const std::string& filename);
 
-        return *this;
-    }
-
-    void open(const std::string& filename){
-        if (!serializer.open(filename)){
-            throw FilesystemNotInitializedException();
-        }
-
-        serializer.load(filesystemInfo);
-
-        delete[] filesystemSegment;
-        filesystemSegment = new FilesystemSegment[filesystemInfo.segmentsCount];
-
-        for (int i = 0; i < filesystemInfo.segmentsCount; i++){
-            serializer.load(filesystemSegment[i], i);
-        }
-    }
-
-    void close(){
-        serializer.close();
-    }
+    void close();
 };
 
 

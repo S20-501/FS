@@ -5,7 +5,7 @@
 #ifndef MONITOR_MYCOMMANDFACTORY_HPP
 #define MONITOR_MYCOMMANDFACTORY_HPP
 
-#include "../commands/CommandFactory.hpp"
+#include "CommandFactory.hpp"
 
 template<typename CommandClasses>
 class FSCommandFactory : public CommandFactory<CommandClasses> {
