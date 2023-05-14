@@ -17,4 +17,4 @@ add_library(FSCommands STATIC ${FScommands_list})
 # make utils visible in cpp
 include_directories("${Monitor_SOURCE_DIR}/monitor/commands")
 
-target_link_libraries(FSCommands commands_base)
+target_link_libraries(FSCommands commands_base monitor_common)
