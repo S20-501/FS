@@ -2,7 +2,7 @@
 #define MAIN_INIT_H
 
 #include "BaseCommand.h"
-#include "../Filesystem.hpp"
+#include "Filesystem.hpp"
 
 class Init : public BaseCommand {
 private:

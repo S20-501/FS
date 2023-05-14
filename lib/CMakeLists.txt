@@ -3,7 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
   ConsoleMonitor
   GIT_REPOSITORY https://github.com/kooooootb/ConsoleMonitor.git
-  GIT_TAG        8480e772a90ed00e93817316019fcb795c3d0d87
+  GIT_TAG        62e8a6a911ed1d57988f70e4f40c61b47aab255c
 )
 
 FetchContent_MakeAvailable(ConsoleMonitor)
