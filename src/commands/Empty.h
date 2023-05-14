@@ -1,13 +1,16 @@
 #ifndef MAIN_EMPTY_H
 #define MAIN_EMPTY_H
 
-#include "../commands/BaseCommand.h"
+#include "BaseCommand.h"
+#include "../Filesystem.hpp"
 
 class Empty : public BaseCommand {
+private:
+    Filesystem &filesystem;
 protected:
     std::string help() override;
 public:
-    Empty();
+    explicit Empty(Filesystem *filesystem) : filesystem(*filesystem) {}
 
     static std::string getQuery();
 

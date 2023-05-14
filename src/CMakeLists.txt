@@ -32,5 +32,5 @@ endif()
 # make commands directory visible in cmake
 add_subdirectory(commands) # includes adding util funcs
 
-add_executable(FS_main main.cpp Empty.hpp)
+add_executable(FS_main main.cpp)
 target_link_libraries(FS_main monitor FSCommands)
