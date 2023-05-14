@@ -1,6 +1,6 @@
 enable_testing()
 
-cmake_policy(SET CMP0135 NEW)
+cmake_policy(VERSION 3.22...3.24)
 
 # ----------GTest Connect
 include(FetchContent)
