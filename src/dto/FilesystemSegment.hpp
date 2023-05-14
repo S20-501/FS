@@ -5,7 +5,7 @@
 #ifndef FS_FILESYSTEMSEGMENT_HPP
 #define FS_FILESYSTEMSEGMENT_HPP
 
-#include "FileRecord.hpp"
+#include "dto/FileRecord.hpp"
 
 class FilesystemSegment {
 public:

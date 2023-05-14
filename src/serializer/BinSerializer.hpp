@@ -5,7 +5,7 @@
 #ifndef FS_BINSERIALIZER_HPP
 #define FS_BINSERIALIZER_HPP
 
-#include "../exceptions/FileNotFoundException.hpp"
+#include "exceptions/FileNotFoundException.hpp"
 
 class BinSerializer : public ISerializer{
 private:

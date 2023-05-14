@@ -2,8 +2,8 @@
 #include <cstring>
 
 #include "Init.h"
-#include "../exceptions/FileCannotCreate.hpp"
-#include "../UtilsFunctions.hpp"
+#include "exceptions/FileCannotCreate.hpp"
+#include "UtilsFunctions.hpp"
 
 std::string Init::getQuery(){
     return "init";

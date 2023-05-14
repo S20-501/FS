@@ -29,6 +29,8 @@ if(NOT CMAKE_CXX_EXTENSIONS)
     set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
+include_directories(.)
+
 # make commands directory visible in cmake
 add_subdirectory(commands) # includes adding util funcs
 
