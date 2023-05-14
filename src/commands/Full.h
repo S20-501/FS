@@ -1,7 +1,8 @@
 #ifndef MAIN_FULL_H
 #define MAIN_FULL_H
 
-#include "../commands/BaseCommand.h"
+#include "BaseCommand.h"
+#include "../Filesystem.hpp"
 
 class Full : public BaseCommand {
 private:

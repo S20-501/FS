@@ -4,7 +4,7 @@
 SET(FScommands_list
         Init.cpp
         Help.cpp
-#        Full.cpp
+        Full.cpp
 #        Empty.cpp
         Enter.cpp
 #        Copy.cpp
