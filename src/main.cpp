@@ -4,7 +4,7 @@
 #include "Monitor.h"
 
 #include "commands/FSCommands.hpp"
-#include "BinSerializer.hpp"
+#include "serializer/BinSerializer.hpp"
 
 #include "exceptions/FilesystemNotInitializedException.hpp"
 
