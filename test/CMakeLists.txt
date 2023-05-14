@@ -26,6 +26,8 @@ target_link_libraries(
         FS_tests
         GTest::gtest_main
         monitor
+        FSCommands
+        FS
 )
 
 gtest_discover_tests(FS_tests)
