@@ -9,8 +9,6 @@
 #include "exceptions/FilesystemException.hpp"
 #include "exceptions/FileWriteException.hpp"
 
-//#define MONITOR_WITHFILE
-
 int main() {
     BinSerializer serializer;
 
@@ -32,12 +30,16 @@ int main() {
 #ifdef MONITOR_WITHFILE
     std::ifstream istream("input.txt");
     if(!istream.is_open()){
-        throw std::runtime_error("can't find input file");
+        std::cerr << "Can't find input file: input.txt" << std::endl;
+        filesystem.close();
+        return -7;
     }
 
     std::ofstream ostream("output.txt");
     if(!ostream.is_open()){
-        throw std::runtime_error("can't find output file");
+        std::cerr << "Can't find output file: output.txt" << std::endl;
+        filesystem.close();
+        return -8;
     }
 
     Monitor monitor(commandFactory, istream, ostream, true);
