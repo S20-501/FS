@@ -24,16 +24,19 @@ std::string Empty::run() {
     int countOfFreeBlocks = 0;
     int maxFileSizeCreationLimit = 0;
     int availableFileRecordsCount = 0;
-    std::map<int, int> availableSizeBlocks;
+    std::map<int, int> availableSizeBlocks;  //key - blockCount, value - count of files with blockCount key
 
     uint16_t segments_count = filesystem.filesystemInfo.segmentsCount;
     for (uint16_t i = 0; i < segments_count; ++i) {
         FilesystemSegment segment = filesystem.filesystemSegment[i];
+        int countOfBusyBlocksInSegment = 0;
 
-        uint16_t j = 0;
-        while (true) {
+        for (int j = 0; j < FilesystemSegment::FILE_RECORDS_COUNT; ++j) {
             FileRecord fileRecord = segment.fileRecord[j];
 
+            if (fileRecord.blockCount != 0) {
+                countOfBusyBlocksInSegment += fileRecord.blockCount;
+            }
             if (fileRecord.recordType == RecordType::FREE) {
                 int blockCount = fileRecord.blockCount;
 
@@ -53,9 +56,25 @@ std::string Empty::run() {
             }
 
             if (fileRecord.recordType == RecordType::RECORDS_END) {
+                int countOfFreeBlocksEnd = filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - countOfBusyBlocksInSegment;
+
+                auto itFind = availableSizeBlocks.find(countOfFreeBlocksEnd);
+                if (itFind != availableSizeBlocks.end()) {
+                    int& count = itFind->second;
+                    ++count;
+                } else {
+                    availableSizeBlocks.insert( std::pair<int, int>(countOfFreeBlocksEnd, 1) );
+                }
+
+                countOfFreeBlocks += countOfFreeBlocksEnd;
+                availableFileRecordsCount += FilesystemSegment::FILE_RECORDS_COUNT - j - 1;
+
+                if (countOfFreeBlocksEnd > maxFileSizeCreationLimit) {
+                    maxFileSizeCreationLimit = countOfFreeBlocksEnd;
+                }
                 break;
             }
-            ++j;
+
         }
     }
 
@@ -79,7 +98,7 @@ std::string Empty::run() {
             }
             ++j;
         }
-        stream << "Segment " << (i + 1) << ", records count: " << recordsCount << "/" << segment.segmentHeader.segmentsCount << "\n";
+        stream << "Segment " << (i + 1) << ", records count: " << recordsCount << "/" << FilesystemSegment::FILE_RECORDS_COUNT << "\n";
     }
 
     stream << "File size creation limit: " << maxFileSizeCreationLimit << "\n";
@@ -87,7 +106,7 @@ std::string Empty::run() {
 
     stream << "Available size blocks:" << "\n";
     for (const auto &[key, value]: availableSizeBlocks) {
-        stream << "\t" << key << ": " << value << "\n";
+        stream << "  " << key << ": " << value << "\n";
     }
 
     return stream.str();
