@@ -9,6 +9,7 @@
 
 class FilesystemSegment {
 public:
+    static const uint16_t FILE_RECORDS_COUNT = 63;
     struct SegmentHeader{
         uint16_t segmentsCount;
         uint16_t nextSegment;
@@ -19,7 +20,7 @@ public:
 
     uint8_t reserved[6]{};
 
-    FileRecord fileRecord[63];
+    FileRecord fileRecord[FILE_RECORDS_COUNT];
 };
 
 

@@ -79,7 +79,7 @@ std::string Empty::run() {
             }
             ++j;
         }
-        stream << "Segment " << (i + 1) << ", records count: " << recordsCount << "/" << segment.segmentHeader.segmentsUsed << "\n";
+        stream << "Segment " << (i + 1) << ", records count: " << recordsCount << "/" << segment.segmentHeader.segmentsCount << "\n";
     }
 
     stream << "File size creation limit: " << maxFileSizeCreationLimit << "\n";
