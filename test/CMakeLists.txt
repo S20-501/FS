@@ -1,6 +1,6 @@
 enable_testing()
 
-cmake_policy(SET CMP0135 NEW)
+cmake_policy(VERSION 3.22...3.24)
 
 # ----------GTest Connect
 include(FetchContent)
@@ -26,6 +26,8 @@ target_link_libraries(
         FS_tests
         GTest::gtest_main
         monitor
+        FSCommands
+        FS
 )
 
 gtest_discover_tests(FS_tests)
