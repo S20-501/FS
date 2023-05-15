@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iomanip>
 
 #include "Full.h"
 #include "../UtilsFunctions.hpp"
@@ -68,27 +69,24 @@ std::string Full::run() {
     for (uint16_t i = 0; i < segments_count; ++i) {
         FilesystemSegment segment = filesystem.filesystemSegment[i];
 
-        uint16_t j = 0;
-        while (true) {
-            FileRecord fileRecord = segment.fileRecord[j];
+        for (auto fileRecord : segment.fileRecord) {
+            if (fileRecord.recordType == RecordType::RECORDS_END) {
+                ss << std::setw(6) << std::setfill('0') << std::oct << fileRecord.recordType << " ";
+                ss << "end " << std::dec << fileRecord.blockCount << "\n";
+                break;
+            }
 
             if (shouldPrintFree) {
-                ss << static_cast<uint16_t>(fileRecord.recordType) << " "
-                   << fileRecord.fileName << " "
-                   << fileRecord.blockCount << "\n";
+                ss << std::setw(6) << std::setfill('0') << std::oct << fileRecord.recordType << " ";
+                ss << fileRecord.fileName << " " << std::dec << fileRecord.blockCount << "\n";
             }
             else {
                 if (fileRecord.recordType != RecordType::FREE) {
-                    ss << static_cast<uint16_t>(fileRecord.recordType) << " "
-                       << fileRecord.fileName << " "
-                       << fileRecord.blockCount << "\n";
+                    ss << std::setw(6) << std::setfill('0') << std::oct << fileRecord.recordType << " ";
+                    ss << fileRecord.fileName << " " << std::dec << fileRecord.blockCount << "\n";
                 }
             }
 
-            if (fileRecord.recordType == RecordType::RECORDS_END) {
-                break;
-            }
-            ++j;
         }
     }
 
