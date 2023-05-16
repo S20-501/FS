@@ -34,6 +34,10 @@ add_subdirectory(commands) # includes adding util funcs
 
 #add_definitions(-DMONITOR_WITHFILE)
 
+if( WIN32 )
+    add_link_options(-static -static-libgcc -static-libstdc++)
+endif()
+
 add_library(FS STATIC
         Filesystem.cpp
         serializer/BinSerializer.cpp)
