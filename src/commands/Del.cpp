@@ -4,7 +4,7 @@
 
 #include "Del.h"
 #include "../utils/utilFunctions.h"
-#include "../exceptions/FileCannotCreate.hpp"
+
 #include "../UtilsFunctions.hpp"
 
 std::string Del::getQuery(){
@@ -45,25 +45,24 @@ std::string Del::run() {
     char name[10] = "free";
     for(int j =0;j<filesystem.filesystemInfo.segmentsCount; j++) {
         for (int i = 0; i < 63; i++) {
-            auto file = filesystem.filesystemSegment[j].fileRecord[i];
-            if (file.recordType != REGULAR_PROTECTED && file.recordType != FREE && file.recordType != RECORDS_END) {
-                std::cerr << file.fileName << std::endl;
-                if (filename == file.fileName) {
-                    strcpy(file.fileName, name);
-                    std::cerr << file.fileName << std::endl;
+            if (filesystem.filesystemSegment[j].fileRecord[i].recordType != REGULAR_PROTECTED && filesystem.filesystemSegment[j].fileRecord[i].recordType != FREE
+            && filesystem.filesystemSegment[j].fileRecord[i].recordType != RECORDS_END) {
+                if (filename == filesystem.filesystemSegment[j].fileRecord[i].fileName) {
+                    strcpy(filesystem.filesystemSegment[j].fileRecord[i].fileName, name);
                     if (i != 62) {
                         if (filesystem.filesystemSegment[j].fileRecord[i + 1].recordType == RECORDS_END) {
-                            file.recordType = static_cast<RecordType>(RECORDS_END);
+                            filesystem.filesystemSegment[j].fileRecord[i].recordType = static_cast<RecordType>(RECORDS_END);
                         } else {
-                            file.recordType = static_cast<RecordType>(FREE);
+                            filesystem.filesystemSegment[j].fileRecord[i].recordType = static_cast<RecordType>(FREE);
                         }
                     }
                     ident = true;
                     break;
                 }
             }
-            if (ident)
+            if (ident) {
                 break;
+            }
         }
     }// return fs_init(blocks, segments, label);
     filesystem.serializer.save(filesystem);
