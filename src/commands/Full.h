@@ -1,13 +1,16 @@
 #ifndef MAIN_FULL_H
 #define MAIN_FULL_H
 
-#include "../commands/BaseCommand.h"
+#include "BaseCommand.h"
+#include "../Filesystem.hpp"
 
 class Full : public BaseCommand {
 private:
-    bool empty;
-    bool header;
-    bool headeronly;
+    bool empty = false;
+    bool header = false;
+    bool headeronly = false;
+
+    Filesystem &filesystem;
 
     static constexpr char WRONGBOOLSAMOUNT[] = "invalid boolean values amount";
 
@@ -19,7 +22,7 @@ private:
 protected:
     std::string help() override;
 public:
-    Full();
+    explicit Full(Filesystem *filesystem): filesystem(*filesystem) {}
 
     static std::string getQuery();
 
