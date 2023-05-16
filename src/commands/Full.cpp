@@ -13,7 +13,7 @@ std::string Full::getQuery(){
     return "full";
 }
 
-std::string Full::checkAndAssemble(Parser &parser) {
+std::string Full::checkAndAssemble(Parser &parser)  {
     std::string errorMessage;
 
     if(errorMessage = checkAmount(parser); !errorMessage.empty()) return errorMessage;
@@ -71,18 +71,18 @@ std::string Full::run() {
 
         for (auto fileRecord : segment.fileRecord) {
             if (fileRecord.recordType == RecordType::RECORDS_END) {
-                ss << std::setw(6) << std::setfill('0') << std::oct << fileRecord.recordType << " ";
+                ss << std::setw(6) << std::setfill('0') << std::oct << static_cast<unsigned int>(fileRecord.recordType) << " ";
                 ss << "end " << std::dec << fileRecord.blockCount << "\n";
                 break;
             }
 
             if (shouldPrintFree) {
-                ss << std::setw(6) << std::setfill('0') << std::oct << fileRecord.recordType << " ";
+                ss << std::setw(6) << std::setfill('0') << std::oct << static_cast<unsigned int>(fileRecord.recordType) << " ";
                 ss << fileRecord.fileName << " " << std::dec << fileRecord.blockCount << "\n";
             }
             else {
                 if (fileRecord.recordType != RecordType::FREE) {
-                    ss << std::setw(6) << std::setfill('0') << std::oct << fileRecord.recordType << " ";
+                    ss << std::setw(6) << std::setfill('0') << std::oct << static_cast<unsigned int>(fileRecord.recordType) << " ";
                     ss << fileRecord.fileName << " " << std::dec << fileRecord.blockCount << "\n";
                 }
             }
