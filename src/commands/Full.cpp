@@ -57,12 +57,12 @@ std::string Full::run() {
     uint16_t tomSize = filesystem.filesystemInfo.blocksCount;
 
     if (shouldPrintOnlyHeader) {
-        ss << tomLabel << " " << tomSize << "\n";
+        ss << "Label: \"" << tomLabel << "\". Disk size: " << tomSize << ".\n";
         return ss.str();
     }
 
     if (shouldPrintHeader) {
-        ss << tomLabel << " " << tomSize << "\n";
+        ss << "Label: \"" << tomLabel << "\". Disk size: " << tomSize << ".\n";
     }
 
     uint16_t segments_count = filesystem.filesystemInfo.segmentsCount;

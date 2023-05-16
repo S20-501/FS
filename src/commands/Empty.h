@@ -6,7 +6,12 @@
 
 class Empty : public BaseCommand {
 private:
+    bool empty = false;
+
     Filesystem &filesystem;
+    static constexpr char WRONGBOOLSAMOUNT[] = "invalid boolean values amount";
+    std::string checkAmount(const Parser &parser);
+    void setEmpty(const boolArgs_t &bools);
 protected:
     std::string help() override;
 public:

@@ -14,7 +14,21 @@ std::string Empty::getQuery(){
 }
 
 std::string Empty::checkAndAssemble(Parser &parser) {
-    return ""; // always correct
+    std::string errorMessage;
+
+    if(errorMessage = checkAmount(parser); !errorMessage.empty()) return errorMessage;
+
+    setEmpty(parser.getBoolArgs());
+
+    return errorMessage;
+}
+
+std::string Empty::checkAmount(const Parser &parser) {
+    if(parser.getBoolArgs().size() > 1){
+        return WRONGBOOLSAMOUNT;
+    }
+
+    return "";
 }
 
 std::string Empty::run() {
@@ -108,14 +122,22 @@ std::string Empty::run() {
     stream << "File size creation limit: " << maxFileSizeCreationLimit << "\n";
     stream << "Available file records: " << availableFileRecordsCount << "\n";
 
-    stream << "Available size blocks:" << "\n";
-    for (const auto &[key, value]: availableSizeBlocks) {
-        stream << "  " << key << ": " << value << "\n";
+    if (empty) {
+        stream << "Available size blocks:" << "\n";
+        for (const auto &[key, value]: availableSizeBlocks) {
+            stream << "  " << key << ": " << value << "\n";
+        }
     }
+
+
 
     return stream.str();
 }
 
 std::string Empty::help() {
     return "empty help";
+}
+
+void Empty::setEmpty(const boolArgs_t &bools) {
+    UtilsFunctions::findAndSetBoolArg(bools, empty, "empty", "e");
 }
