@@ -10,7 +10,7 @@ SET(FScommands_list
 #        Copy.cpp
 #        Move.cpp
 #        Del.cpp
-#        Squeeze.cpp
+       Squeeze.cpp
         )
 add_library(FSCommands STATIC ${FScommands_list})
 
