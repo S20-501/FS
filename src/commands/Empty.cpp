@@ -40,12 +40,14 @@ std::string Empty::run() {
             if (fileRecord.recordType == RecordType::FREE) {
                 int blockCount = fileRecord.blockCount;
 
-                auto itFind = availableSizeBlocks.find(blockCount);
-                if (itFind != availableSizeBlocks.end()) {
-                    int& count = itFind->second;
-                    ++count;
-                } else {
-                    availableSizeBlocks.insert( std::pair<int, int>(blockCount, 1) );
+                for (int k = 1; k <= blockCount; ++k) {
+                    auto itFind = availableSizeBlocks.find(k);
+                    if (itFind != availableSizeBlocks.end()) {
+                        int& count = itFind->second;
+                        ++count;
+                    } else {
+                        availableSizeBlocks.insert( std::pair<int, int>(k, 1) );
+                    }
                 }
 
                 countOfFreeBlocks += blockCount;
@@ -57,17 +59,23 @@ std::string Empty::run() {
 
             if (fileRecord.recordType == RecordType::RECORDS_END) {
                 int countOfFreeBlocksEnd = filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - countOfBusyBlocksInSegment;
+                int availableFileRecordsCountEnd = FilesystemSegment::FILE_RECORDS_COUNT - j - 1;
 
-                auto itFind = availableSizeBlocks.find(countOfFreeBlocksEnd);
-                if (itFind != availableSizeBlocks.end()) {
-                    int& count = itFind->second;
-                    ++count;
-                } else {
-                    availableSizeBlocks.insert( std::pair<int, int>(countOfFreeBlocksEnd, 1) );
+                for (int k = 1; k <= countOfFreeBlocksEnd; ++k) {
+                    int recordsToAdd = countOfFreeBlocksEnd / k;
+                    int possibleRecordsToAdd = std::min(recordsToAdd, availableFileRecordsCountEnd);
+
+                    auto itFind = availableSizeBlocks.find(k);
+                    if (itFind != availableSizeBlocks.end()) {
+                        int& count = itFind->second;
+                        count += possibleRecordsToAdd;
+                    } else {
+                        availableSizeBlocks.insert( std::pair<int, int>(k, possibleRecordsToAdd) );
+                    }
                 }
 
                 countOfFreeBlocks += countOfFreeBlocksEnd;
-                availableFileRecordsCount += FilesystemSegment::FILE_RECORDS_COUNT - j - 1;
+                availableFileRecordsCount += availableFileRecordsCountEnd;
 
                 if (countOfFreeBlocksEnd > maxFileSizeCreationLimit) {
                     maxFileSizeCreationLimit = countOfFreeBlocksEnd;
@@ -85,10 +93,7 @@ std::string Empty::run() {
         FilesystemSegment segment = filesystem.filesystemSegment[i];
         int recordsCount = 0;
 
-        uint16_t j = 0;
-        while (true) {
-            FileRecord fileRecord = segment.fileRecord[j];
-
+        for (auto fileRecord : segment.fileRecord) {
             if (fileRecord.recordType != RecordType::FREE) {
                 ++recordsCount;
             }
@@ -96,7 +101,6 @@ std::string Empty::run() {
             if (fileRecord.recordType == RecordType::RECORDS_END) {
                 break;
             }
-            ++j;
         }
         stream << "Segment " << (i + 1) << ", records count: " << recordsCount << "/" << FilesystemSegment::FILE_RECORDS_COUNT << "\n";
     }
