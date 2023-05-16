@@ -1,10 +1,12 @@
 #ifndef MAIN_MOVE_H
 #define MAIN_MOVE_H
 
-#include "../commands/BaseCommand.h"
+#include "BaseCommand.h"
+#include "../Filesystem.hpp"
 
 class Move : public BaseCommand {
 private:
+    Filesystem &filesystem;
     std::string oldFile;
     std::string newFile;
 
@@ -19,7 +21,7 @@ private:
 protected:
     std::string help() override;
 public:
-    Move();
+    explicit Move(Filesystem *filesystem) : filesystem(*filesystem), oldFile(), newFile(){ }
 
     static std::string getQuery();
 

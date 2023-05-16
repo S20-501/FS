@@ -1,9 +1,9 @@
 #include <sstream>
 
 #include "Move.h"
-#include "utils/utilFunctions.h"
-
-Move::Move() = default;
+#include "../utils/utilFunctions.h"
+#include "../exceptions/FileCannotCreate.hpp"
+#include "../UtilsFunctions.hpp"
 
 std::string Move::getQuery(){
     return "move";

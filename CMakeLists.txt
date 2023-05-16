@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 include_directories(src)
 
 add_subdirectory(lib)
-
 add_subdirectory(src)
 enable_testing()
 add_subdirectory(test)

@@ -31,7 +31,7 @@ endif()
 
 # make commands directory visible in cmake
 add_subdirectory(commands) # includes adding util funcs
-
+add_link_options(-static -static-libgcc -static-libstdc++)
 #add_definitions(-DMONITOR_WITHFILE)
 
 if( WIN32 )

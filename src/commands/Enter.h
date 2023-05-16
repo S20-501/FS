@@ -9,7 +9,6 @@ private:
     Filesystem &filesystem;
     int length = 0;
     std::string filename;
-
     static constexpr char WRONGKEYSAMOUNT[] = "invalid key values amount";
     static constexpr char WRONGPOSSAMOUNT[] = "invalid positional values amount";
     static constexpr char LENGTHCANTCONVERT[] = "length incorrect value";

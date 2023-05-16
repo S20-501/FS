@@ -1,4 +1,6 @@
 #include <sstream>
+#include <cstring>
+#include <iostream>
 
 #include "Enter.h"
 #include "../utils/utilFunctions.h"
@@ -61,6 +63,21 @@ std::string Enter::setFilename(posArgs_t &poss) {
 }
 
 std::string Enter::run() {
+   bool ident= false;
+    for(int j =0;j<filesystem.filesystemInfo.segmentsCount; j++)
+    for(auto & i : filesystem.filesystemSegment[j].fileRecord){
+        if(i.recordType != REGULAR_FILE){
+          const char* name= filename.c_str();
+          strcpy(i.fileName,name);
+          i.blockCount = static_cast<uint16_t>(length);
+          i.recordType = static_cast<RecordType>(REGULAR_FILE);
+          ident = true;
+          break;
+      }
+       if(ident)
+        break;
+    }
+    filesystem.serializer.save(filesystem);
     // return fs_init(blocks, segments, label);
     std::stringstream stream;
     stream << "enter command executed, length: \"" << length <<
@@ -69,5 +86,6 @@ std::string Enter::run() {
 }
 
 std::string Enter::help() {
-    return "enter help";
+    return "usage: enter -l <length_file> \"filename\"";
 }
+

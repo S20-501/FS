@@ -1,10 +1,12 @@
 #ifndef MAIN_DEL_H
 #define MAIN_DEL_H
 
-#include "../commands/BaseCommand.h"
+#include "BaseCommand.h"
+#include "../Filesystem.hpp"
 
 class Del : public BaseCommand {
 private:
+    Filesystem &filesystem;
     std::string filename;
 
     static constexpr char WRONGPOSSAMOUNT[] = "invalid positional values amount";
@@ -16,8 +18,8 @@ private:
 protected:
     std::string help() override;
 public:
-    Del();
-
+//    explicit Del(Filesystem *filesystem) : filesystem(*filesystem), filename(){ }
+    explicit Del(Filesystem *filesystem) : filesystem(*filesystem), filename(){ }
     static std::string getQuery();
 
     std::string checkAndAssemble(Parser &parser) final;
