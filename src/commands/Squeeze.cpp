@@ -31,7 +31,7 @@ std::string Squeeze::run() {
                 if (currentFreeRecordIndex == -1) {
                     currentFreeRecordIndex = j;
                 }
-
+                fileRecord.blockCount = 0;
             }
             else if (fileRecord.recordType == RecordType::RECORDS_END) {
                 if (currentFreeRecordIndex != -1) {
@@ -46,7 +46,13 @@ std::string Squeeze::run() {
                 if (currentFreeRecordIndex != -1) {
                     std::swap(fileRecord, segment.fileRecord[currentFreeRecordIndex]);
                     fileRecord.blockCount = 0;
-                    currentFreeRecordIndex = j;
+
+                    int candidateFreeRecordIndex = currentFreeRecordIndex + 1;
+                    if (segment.fileRecord[candidateFreeRecordIndex].recordType == RecordType::FREE) {
+                        currentFreeRecordIndex = candidateFreeRecordIndex;
+                    } else {
+                        currentFreeRecordIndex = j;
+                    }
                 }
             }
         }
