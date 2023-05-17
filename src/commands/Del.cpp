@@ -33,48 +33,49 @@ std::string Del::setFilename(posArgs_t &poss) {
     filename = std::move(poss.back());
     poss.pop_back();
 
-    if(filename.empty()){
+    if(filename.empty() || !checkFile(filename)){
         return INCORRECTFILENAME;
     }
 
     return "";
 }
-
-std::string Del::run() {
-    bool ident= false;
-    char name[10] = "free";
-    for(int j =0;j<filesystem.filesystemInfo.segmentsCount; j++) {
-        for (int i = 0; i < 63; i++) {
-            if (filesystem.filesystemSegment[j].fileRecord[i].recordType != REGULAR_PROTECTED && filesystem.filesystemSegment[j].fileRecord[i].recordType != FREE
-            && filesystem.filesystemSegment[j].fileRecord[i].recordType != RECORDS_END) {
-                if (filename == filesystem.filesystemSegment[j].fileRecord[i].fileName) {
-                    strcpy(filesystem.filesystemSegment[j].fileRecord[i].fileName, name);
-                    if (i != 62) {
-                        if (filesystem.filesystemSegment[j].fileRecord[i + 1].recordType == RECORDS_END) {
-                            filesystem.filesystemSegment[j].fileRecord[i].recordType = static_cast<RecordType>(RECORDS_END);
-                        } else {
-                            filesystem.filesystemSegment[j].fileRecord[i].recordType = static_cast<RecordType>(FREE);
-                        }
+bool Del::checkFile( std::string& name) {
+    for (int j = 0; j < filesystem.filesystemInfo.segmentsCount; j++) {
+        for (int i=0; i<FilesystemSegment::FILE_RECORDS_COUNT; i++) {
+            auto & file = filesystem.filesystemSegment[j].fileRecord[i];
+            if (file.recordType != RECORDS_END ||
+                file.recordType != FREE) {
+                if (file.fileName == name) {
+                    if(filesystem.filesystemSegment[j].fileRecord[i+1].recordType == RECORDS_END) {
+                        recordtype = RECORDS_END;
                     }
-                    ident = true;
-                    break;
+                    else
+                        recordtype = FREE;
+                    return true;
                 }
             }
-            if (ident) {
-                break;
-            }
         }
-    }// return fs_init(blocks, segments, label);
+    }
+    return false;
+}
+FileRecord& Del::findFile(std::string& name) const {
+    for (int j = 0; j < filesystem.filesystemInfo.segmentsCount; j++)
+        for (auto &i: filesystem.filesystemSegment[j].fileRecord) {
+            if(i.fileName == name)
+                return i;
+        }
+}
+
+std::string Del::run() {
+    FileRecord &del = findFile(filename);
+    del.recordType = recordtype;
+    strcpy(del.fileName,"12345.123");
     filesystem.serializer.save(filesystem);
     std::stringstream stream;
-    if(ident) {
-        stream << "del command executed, file name: \"" << filename << "\"";
-        return stream.str();
-    }else
-        return INCORRECTFILENAME;
-
+    stream << "del command executed, file name: \"" << filename << "\"";
+    return stream.str();
 }
 
 std::string Del::help() {
-    return "del help";
+    return R"(usage: del "filename")";
 }

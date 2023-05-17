@@ -9,6 +9,9 @@ private:
     Filesystem &filesystem;
     int length = 0;
     std::string filename;
+    bool have_such_number_of_bytes = false;
+    int max_length_file= 0;
+    static constexpr char NOSPACE[] = "there is no space, do defragmentation";
     static constexpr char WRONGKEYSAMOUNT[] = "invalid key values amount";
     static constexpr char WRONGPOSSAMOUNT[] = "invalid positional values amount";
     static constexpr char LENGTHCANTCONVERT[] = "length incorrect value";
@@ -28,6 +31,8 @@ public:
     static std::string getQuery();
 
     std::string checkAndAssemble(Parser &parser) final;
+    bool checkFile( std::string& name);
+    std::string findPlaceForFile();
     std::string run() final;
 };
 

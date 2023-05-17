@@ -41,7 +41,7 @@ union FSDate {
 
 class FileRecord {
 public:
-    RecordType recordType = FREE; // 1 word
+    RecordType recordType = RECORDS_END; // 1 word
     char fileName[10] = "12345.123"; // 5 words
     uint16_t blockCount = 0xAAAA; // 1 word
     FSDate date {.dateWord=0xBBBB }; //1 word

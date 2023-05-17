@@ -27,6 +27,8 @@ public:
 
     std::string checkAndAssemble(Parser &parser) final;
     std::string run() final;
+    FileRecord& findFile(std::string& name) const ;
+    bool checkFile( std::string& name) const;
 };
 
 #endif //MAIN_MOVE_H
