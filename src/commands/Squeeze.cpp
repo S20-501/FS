@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include "Squeeze.h"
+#include "Empty.h"
 #include "../UtilsFunctions.hpp"
 
 #include "../dto/FileRecord.hpp"
@@ -12,7 +13,19 @@ std::string Squeeze::getQuery(){
 }
 
 std::string Squeeze::checkAndAssemble(Parser &parser) {
-    return ""; // always correct
+    std::string errorMessage;
+
+    if(errorMessage = checkAmount(parser); !errorMessage.empty()) return errorMessage;
+
+    return errorMessage;
+}
+
+std::string Squeeze::checkAmount(const Parser &parser) {
+    if(!parser.getBoolArgs().empty()){
+        return TOO_MANY_ARGS;
+    }
+
+    return "";
 }
 
 std::string Squeeze::run() {
@@ -59,11 +72,13 @@ std::string Squeeze::run() {
     }
 
     filesystem.serializer.save(filesystem);
+
     std::stringstream stream;
-    stream << "squeeze command executed";
+    Empty empty(&filesystem);
+    stream << empty.run();
     return stream.str();
 }
 
 std::string Squeeze::help() {
-    return "squeeze help";
+    return "usage: squeeze";
 }

@@ -27,7 +27,7 @@ std::string Full::checkAndAssemble(Parser &parser)  {
 
 std::string Full::checkAmount(const Parser &parser) {
     if(parser.getBoolArgs().size() > 3){
-        return WRONGBOOLSAMOUNT;
+        return TOO_MANY_ARGS;
     }
 
     return "";
@@ -94,5 +94,5 @@ std::string Full::run() {
 }
 
 std::string Full::help() {
-    return "full help";
+    return "usage: full <--empty|-e> <--header|-h> <--headeronly|-o>";
 }

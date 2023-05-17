@@ -9,7 +9,9 @@ private:
     bool empty = false;
 
     Filesystem &filesystem;
-    static constexpr char WRONGBOOLSAMOUNT[] = "invalid boolean values amount";
+
+    static constexpr char TOO_MANY_ARGS[] = "Too many arguments (see EMPTY --help).";
+
     std::string checkAmount(const Parser &parser);
     void setEmpty(const boolArgs_t &bools);
 protected:

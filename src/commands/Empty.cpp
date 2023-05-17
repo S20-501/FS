@@ -25,7 +25,7 @@ std::string Empty::checkAndAssemble(Parser &parser) {
 
 std::string Empty::checkAmount(const Parser &parser) {
     if(parser.getBoolArgs().size() > 1){
-        return WRONGBOOLSAMOUNT;
+        return TOO_MANY_ARGS;
     }
 
     return "";
@@ -135,7 +135,7 @@ std::string Empty::run() {
 }
 
 std::string Empty::help() {
-    return "empty help";
+    return "usage: empty <--empty|-e>";
 }
 
 void Empty::setEmpty(const boolArgs_t &bools) {

@@ -7,6 +7,10 @@
 class Squeeze : public BaseCommand {
 private:
     Filesystem& filesystem;
+
+    static constexpr char TOO_MANY_ARGS[] = "Too many arguments (see EMPTY --help).";
+
+    std::string checkAmount(const Parser &parser);
 protected:
     std::string help() override;
 public:
