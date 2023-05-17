@@ -23,9 +23,9 @@ typedef FSCommandFactory<std::tuple<
     Empty,
     Enter,
 //        Copy,
-//        Move,
-//        Del,
-        Squeeze
+        Move,
+    Del
+//        Squeeze,
 //        Help
 > > FSCommands;
 
