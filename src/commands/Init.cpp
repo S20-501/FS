@@ -122,7 +122,7 @@ std::string Init::run() {
 
         currentSegmentFilesStart += blocksPerSegment;
 
-        for (int j = 0; j < 63; ++j) {
+        for (int j = 0; j < FilesystemSegment::FILE_RECORDS_COUNT; ++j) {
             filesystem.filesystemSegment[i].fileRecord[j].blockCount = static_cast<uint16_t>(0);
         }
     }
