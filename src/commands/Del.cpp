@@ -69,6 +69,8 @@ FileRecord& Del::findFile(std::string& name) const {
 std::string Del::run() {
     FileRecord &del = findFile(filename);
     del.recordType = recordtype;
+    if(recordtype == RECORDS_END)
+        del.blockCount = 0;
     strcpy(del.fileName,"12345.123");
     filesystem.serializer.save(filesystem);
     std::stringstream stream;
