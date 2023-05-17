@@ -2,12 +2,7 @@
 #include <iomanip>
 
 #include "Full.h"
-#include "../UtilsFunctions.hpp"
-
-#include "../dto/FileRecord.hpp"
-#include "../dto/FilesystemInfo.hpp"
-#include "../dto/FilesystemSegment.hpp"
-
+#include "CommonFunctions.h"
 
 std::string Full::getQuery(){
     return "full";
@@ -34,19 +29,18 @@ std::string Full::checkAmount(const Parser &parser) {
 }
 
 void Full::setEmpty(const boolArgs_t &bools) {
-    UtilsFunctions::findAndSetBoolArg(bools, empty, "empty", "e");
+    MonCom::findAndSetBoolArg(bools, empty, "empty", "e");
 }
 
 void Full::setHeader(const boolArgs_t &bools) {
-    UtilsFunctions::findAndSetBoolArg(bools, header, "header", "h");
+    MonCom::findAndSetBoolArg(bools, header, "header", "h");
 }
 
 void Full::setHeaderonly(const boolArgs_t &bools) {
-    UtilsFunctions::findAndSetBoolArg(bools, headeronly, "headeronly", "o");
+    MonCom::findAndSetBoolArg(bools, headeronly, "headeronly", "o");
 }
 
 std::string Full::run() {
-    // return fs_full(empty, header, headeronly);
     bool shouldPrintFree = empty;
     bool shouldPrintHeader = header;
     bool shouldPrintOnlyHeader = headeronly;
@@ -86,7 +80,6 @@ std::string Full::run() {
                     ss << fileRecord.fileName << " " << std::dec << fileRecord.blockCount << "\n";
                 }
             }
-
         }
     }
 

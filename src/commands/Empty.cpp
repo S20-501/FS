@@ -2,12 +2,7 @@
 #include <map>
 
 #include "Empty.h"
-#include "../UtilsFunctions.hpp"
-
-#include "../dto/FileRecord.hpp"
-#include "../dto/FilesystemInfo.hpp"
-#include "../dto/FilesystemSegment.hpp"
-
+#include "CommonFunctions.h"
 
 std::string Empty::getQuery(){
     return "empty";
@@ -32,7 +27,6 @@ std::string Empty::checkAmount(const Parser &parser) {
 }
 
 std::string Empty::run() {
-    // return fs_blackhole();
     std::stringstream stream;
 
     int countOfFreeBlocks = 0;
@@ -129,8 +123,6 @@ std::string Empty::run() {
         }
     }
 
-
-
     return stream.str();
 }
 
@@ -139,5 +131,5 @@ std::string Empty::help() {
 }
 
 void Empty::setEmpty(const boolArgs_t &bools) {
-    UtilsFunctions::findAndSetBoolArg(bools, empty, "empty", "e");
+    MonCom::findAndSetBoolArg(bools, empty, "empty", "e");
 }

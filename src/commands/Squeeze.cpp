@@ -2,11 +2,6 @@
 
 #include "Squeeze.h"
 #include "Empty.h"
-#include "../UtilsFunctions.hpp"
-
-#include "../dto/FileRecord.hpp"
-#include "../dto/FilesystemInfo.hpp"
-#include "../dto/FilesystemSegment.hpp"
 
 std::string Squeeze::getQuery(){
     return "squeeze";
@@ -29,8 +24,6 @@ std::string Squeeze::checkAmount(const Parser &parser) {
 }
 
 std::string Squeeze::run() {
-    // return fs_squeeze();
-
     uint16_t segments_count = filesystem.filesystemInfo.segmentsCount;
     for (uint16_t i = 0; i < segments_count; ++i) {
         FilesystemSegment& segment = filesystem.filesystemSegment[i];
