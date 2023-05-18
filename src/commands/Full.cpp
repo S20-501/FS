@@ -3,6 +3,7 @@
 
 #include "Full.h"
 #include "CommonFunctions.h"
+#include "UtilsFunctions.hpp"
 
 std::string Full::getQuery(){
     return "full";
@@ -40,14 +41,6 @@ void Full::setHeaderonly(const boolArgs_t &bools) {
     MonCom::findAndSetBoolArg(bools, headeronly, "headeronly", "o");
 }
 
-std::string Full::formatResult(std::string& str) {
-    size_t len = str.length();
-    if (str.at(len - 1) == '\n') {
-        str.erase(len - 1);
-    }
-    return str;
-}
-
 std::string Full::run() {
     bool shouldPrintFree = empty;
     bool shouldPrintHeader = header;
@@ -63,7 +56,7 @@ std::string Full::run() {
         ss << "Label: \"" << tomLabel << "\". Disk size: " << tomSize << ".\n";
         if (shouldPrintOnlyHeader) {
             std::string res = ss.str();
-            return formatResult(res);
+            return UtilsFunctions::removeClosingEndl(res);
         }
     }
 
@@ -96,7 +89,7 @@ std::string Full::run() {
     }
 
     std::string res = ss.str();
-    return formatResult(res);
+    return UtilsFunctions::removeClosingEndl(res);
 }
 
 std::string Full::help() {

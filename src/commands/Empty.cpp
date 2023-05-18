@@ -2,11 +2,7 @@
 #include <map>
 
 #include "Empty.h"
-#include "../UtilsFunctions.hpp"
-
-#include "../dto/FileRecord.hpp"
-#include "../dto/FilesystemInfo.hpp"
-#include "../dto/FilesystemSegment.hpp"
+#include "CommonFunctions.h"
 
 
 std::string Empty::getQuery(){
@@ -139,5 +135,5 @@ std::string Empty::help() {
 }
 
 void Empty::setEmpty(const boolArgs_t &bools) {
-    UtilsFunctions::findAndSetBoolArg(bools, empty, "empty", "e");
+    MonCom::findAndSetBoolArg(bools, empty, "empty", "e");
 }
