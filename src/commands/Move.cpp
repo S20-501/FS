@@ -40,8 +40,11 @@ std::string Move::setOldFile(posArgs_t &poss) {
     }
 
     if(!checkFile(oldFile)){
-        return OLD_FILENAME_EXISTS;
+        std::stringstream stream;
+        stream << "File " << '"' << oldFile << '"' << " not found.";
+        return stream.str();
     }
+
     return "";
 }
 
@@ -53,7 +56,9 @@ std::string Move::setNewFile(posArgs_t &poss) {
     }
 
     if(!checkFile(newFile)){
-        return NEW_FILENAME_EXISTS;
+        std::stringstream stream;
+        stream << "File " << '"' << newFile << '"' << " not found.";
+        return stream.str();
     }
 
     return "";
@@ -96,7 +101,8 @@ FileRecord & Move::findFile(std::string& name) {
 }
 
 std::string Move::run() {
-    // return fs_init(blocks, segments, label);
+    std::stringstream stream;
+
     bool have_free_memory = false;
     FileRecord& oldfile = findFile(oldFile);
     int oldInSegment = inSegment;
@@ -117,9 +123,10 @@ std::string Move::run() {
             oldfile.blockCount = 0;
         strcpy(oldfile.fileName,"12345.123");
         newfile = old;
-    } else
-        return TARGET_INSUFFICENT;
-    std::stringstream stream;
+    } else {
+        stream << COMMON_ERROR_MESSAGE << TARGET_INSUFFICENT;
+        return stream.str();
+    }
     filesystem.serializer.save(filesystem);
     stream << "File moved successfully.";
     return stream.str();

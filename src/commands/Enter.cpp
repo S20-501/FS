@@ -158,7 +158,7 @@ std::string Enter::findPlaceForFile() {
 std::string Enter::run() {
  if((filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - number_not_free_blocks) >= length){
         std::string errorMessage;
-        if (errorMessage = findPlaceForFile(); !errorMessage.empty()) return errorMessage;
+        if (errorMessage = findPlaceForFile(); !errorMessage.empty()) return COMMON_ERROR_MESSAGE + errorMessage;
  }else
        return NO_SPACE;
     filesystem.serializer.save(filesystem);

@@ -10,12 +10,11 @@ private:
     std::string filename;
     RecordType recordtype;
 
-    static constexpr char COMMON_ERROR_MESSAGE[] = "Error in creating file: ";
+    static constexpr char COMMON_ERROR_MESSAGE[] = "Error in delete file: ";
 
-    static constexpr char NOT_ENOUGH_ARGS[] = "Not enough arguments (see ENTER --help).";
-    static constexpr char TOO_MANY_ARGS[] = "Too many arguments (see ENTER --help).";
+    static constexpr char NOT_ENOUGH_ARGS[] = "Not enough arguments (see DEL --help).";
+    static constexpr char TOO_MANY_ARGS[] = "Too many arguments (see DEL --help).";
     static constexpr char NO_FILENAME_VALUE[] = "Filename can’t be empty.";
-    static constexpr char FILENAME_INCORRECT[] = "Filename has incorrect format.";
 
 
     std::string checkAmount(const Parser &parser);

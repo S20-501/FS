@@ -39,7 +39,9 @@ std::string Del::setFilename(posArgs_t &poss) {
     }
 
     if(!checkFile(filename)){
-        return FILENAME_INCORRECT;
+        std::stringstream stream;
+        stream << "File " << '"' << filename << '"' << " not found.";
+        return stream.str();
     }
 
     return "";
@@ -80,7 +82,7 @@ std::string Del::run() {
     strcpy(del.fileName,"12345.123");
     filesystem.serializer.save(filesystem);
     std::stringstream stream;
-    stream << "del command executed, file name: \"" << filename << "\"";
+    stream << "File deleted successfully.";
     return stream.str();
 }
 

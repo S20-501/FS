@@ -18,9 +18,7 @@ private:
     static constexpr char NOT_ENOUGH_ARGS[] = "Not enough arguments (see MOVE --help).";
     static constexpr char TOO_MANY_ARGS[] = "Too many arguments (see MOVE --help).";
     static constexpr char NO_OLD_FILENAME_VALUE[] = "Old filename can’t be empty.";
-    static constexpr char OLD_FILENAME_EXISTS[] = "The old file with that name already exists on disk.";
     static constexpr char NO_NEW_FILENAME_VALUE[] = "Old filename filename can’t be empty.";
-    static constexpr char NEW_FILENAME_EXISTS[] = "The new file with that name already exists on disk.";
     static constexpr char TARGET_INSUFFICENT[] = "The size of the target file is insufficient to store the source.";
 
     std::string checkAmount(const Parser &parser);
