@@ -65,25 +65,25 @@ std::string Full::run() {
         FilesystemSegment segment = filesystem.filesystemSegment[i];
 
         for (auto fileRecord : segment.fileRecord) {
+            if (fileRecord.recordType == RecordType::FREE && !shouldPrintFree) {
+                continue;
+            }
 
-            bool shouldPrintRecord = (fileRecord.recordType == RecordType::FREE && shouldPrintFree) || (fileRecord.recordType != RecordType::FREE);
+            ss << std::setw(6) << std::setfill('0')
+                << std::oct << static_cast<unsigned int>(fileRecord.recordType) << std::dec << " ";
 
-            if (shouldPrintRecord) {
-                ss << std::setw(6) << std::setfill('0') << std::oct << static_cast<unsigned int>(fileRecord.recordType) << " ";
+            if (fileRecord.recordType == RecordType::FREE) {
+                ss << "free ";
+            } else if (fileRecord.recordType == RecordType::RECORDS_END){
+                ss << "end ";
+            } else {
+                ss << fileRecord.fileName;
+            }
 
-                if (fileRecord.recordType == RecordType::FREE) {
-                    ss << "free";
-                }
-                else if (fileRecord.recordType == RecordType::RECORDS_END) {
-                    ss << "end";
-                    ss << " " << std::dec << fileRecord.blockCount << "\n";
-                    break;
-                }
-                else {
-                    ss << fileRecord.fileName;
-                }
+            ss << " " << fileRecord.blockCount << "\n";
 
-                ss << " " << std::dec << fileRecord.blockCount << "\n";
+            if (fileRecord.recordType == RecordType::RECORDS_END) {
+                break;
             }
         }
     }
