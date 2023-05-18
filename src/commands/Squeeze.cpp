@@ -2,11 +2,7 @@
 
 #include "Squeeze.h"
 #include "Empty.h"
-#include "../UtilsFunctions.hpp"
-
-#include "../dto/FileRecord.hpp"
-#include "../dto/FilesystemInfo.hpp"
-#include "../dto/FilesystemSegment.hpp"
+#include "UtilsFunctions.hpp"
 
 std::string Squeeze::getQuery(){
     return "squeeze";
@@ -76,7 +72,9 @@ std::string Squeeze::run() {
     std::stringstream stream;
     Empty empty(&filesystem);
     stream << empty.run();
-    return stream.str();
+
+    std::string res = stream.str();
+    return UtilsFunctions::removeClosingEndl(res);
 }
 
 std::string Squeeze::help() {

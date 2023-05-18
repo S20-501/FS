@@ -1,8 +1,10 @@
 #ifndef MAIN_EMPTY_H
 #define MAIN_EMPTY_H
 
+#include <map>
+
 #include "BaseCommand.h"
-#include "../Filesystem.hpp"
+#include "Filesystem.hpp"
 
 class Empty : public BaseCommand {
 private:
@@ -14,6 +16,8 @@ private:
 
     std::string checkAmount(const Parser &parser);
     void setEmpty(const boolArgs_t &bools);
+
+    static void updateAvailableSizeBlocks(std::map<int, int>& availableSizeBlocks, int keyToAdd, int valueToAdd);
 protected:
     std::string help() override;
 public:

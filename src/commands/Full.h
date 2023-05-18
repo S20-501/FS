@@ -2,7 +2,7 @@
 #define MAIN_FULL_H
 
 #include "BaseCommand.h"
-#include "../Filesystem.hpp"
+#include "Filesystem.hpp"
 
 class Full : public BaseCommand {
 private:
