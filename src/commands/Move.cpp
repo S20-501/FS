@@ -1,9 +1,9 @@
 #include <sstream>
 #include <iostream>
+#include <cstring>
 #include "Move.h"
 #include "../utils/utilFunctions.h"
 #include "../exceptions/FileCannotCreate.hpp"
-#include "../UtilsFunctions.hpp"
 
 std::string Move::getQuery(){
     return "move";
@@ -24,7 +24,6 @@ std::string Move::checkAmount(const Parser &parser) {
     if(parser.getPosArgs().size() != 2){
         return WRONGPOSSAMOUNT;
     }
-
     return "";
 }
 
@@ -47,12 +46,18 @@ std::string Move::setNewFile(posArgs_t &poss) {
 
     return "";
 }
-bool Move::checkFile( std::string& name) const {
+bool Move::checkFile( std::string& name) {
     for (int j = 0; j < filesystem.filesystemInfo.segmentsCount; j++) {
-        for (auto & i : filesystem.filesystemSegment[j].fileRecord) {
-            if (i.recordType != RECORDS_END ||
-                i.recordType != FREE) {
-                if (i.fileName == name) {
+        for (int i=0; i<FilesystemSegment::FILE_RECORDS_COUNT; i++) {
+            auto & file = filesystem.filesystemSegment[j].fileRecord[i];
+            if (file.recordType != RECORDS_END ||
+                file.recordType != FREE) {
+                if (file.fileName == name) {
+                    if(filesystem.filesystemSegment[j].fileRecord[i+1].recordType == RECORDS_END) {
+                        recordtype = RECORDS_END;
+                    }
+                    else
+                        recordtype = FREE;
                     return true;
                 }
             }
@@ -60,22 +65,48 @@ bool Move::checkFile( std::string& name) const {
     }
     return false;
 }
-FileRecord& Move::findFile(std::string& name) const {
-    for (int j = 0; j < filesystem.filesystemInfo.segmentsCount; j++)
+FileRecord & Move::findFile(std::string& name) {
+    int busy_space;
+    for (int j = 0; j < filesystem.filesystemInfo.segmentsCount; j++) {
+        busy_space = 0;
         for (auto &i: filesystem.filesystemSegment[j].fileRecord) {
-            if(i.fileName == name)
+            if (i.recordType != RECORDS_END)
+                busy_space += static_cast<int>(i.blockCount);
+            else {
+                freespace = filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - busy_space;
+                inSegment = j;
+            }
+                if (i.fileName == name)
                 return i;
         }
+    }
+    throw std::runtime_error("File not found");
 }
+
 std::string Move::run() {
     // return fs_init(blocks, segments, label);
-
-
+    bool have_free_memory = false;
     FileRecord& oldfile = findFile(oldFile);
+    int oldInSegment = inSegment;
     FileRecord& newfile = findFile(newFile);
-    FileRecord old = findFile(oldFile);
-    oldfile = newfile;
-    newfile = old;
+    int freeSpaceNewSegment = freespace;
+    FileRecord old = oldfile;
+    if(filesystem.filesystemSegment[oldInSegment].fileRecord[FilesystemSegment::FILE_RECORDS_COUNT - 1].recordType == RECORDS_END) {
+        if (oldfile.blockCount >= newfile.blockCount) {
+            if (freeSpaceNewSegment >= oldfile.blockCount - newfile.blockCount)
+                have_free_memory = true;
+        } else {
+            have_free_memory = true;
+        }
+    }
+    if(have_free_memory) {
+        oldfile.recordType = recordtype;
+        if(recordtype == RECORDS_END)
+            oldfile.blockCount = 0;
+        strcpy(oldfile.fileName,"12345.123");
+        newfile = old;
+    } else
+        return WRONGPOSSAMOUNT;
     std::stringstream stream;
     filesystem.serializer.save(filesystem);
     stream << "move command executed, old file: \"" << oldFile <<
@@ -84,5 +115,5 @@ std::string Move::run() {
 }
 
 std::string Move::help() {
-    return R"(usage: del "old filename" "new filename")";
+    return R"(usage: move "old filename" "new filename")";
 }

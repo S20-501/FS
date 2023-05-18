@@ -64,6 +64,7 @@ FileRecord& Del::findFile(std::string& name) const {
             if(i.fileName == name)
                 return i;
         }
+    throw std::runtime_error("File not found");
 }
 
 std::string Del::run() {

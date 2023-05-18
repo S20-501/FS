@@ -9,6 +9,9 @@ private:
     Filesystem &filesystem;
     std::string oldFile;
     std::string newFile;
+    int freespace = 0;
+    int inSegment = 0;
+    RecordType recordtype;
 
     static constexpr char WRONGPOSSAMOUNT[] = "invalid positional values amount";
     static constexpr char INCORRECTOLDFILE[] = "old file name value is incorrect";
@@ -21,14 +24,14 @@ private:
 protected:
     std::string help() override;
 public:
-    explicit Move(Filesystem *filesystem) : filesystem(*filesystem), oldFile(), newFile(){ }
+    explicit Move(Filesystem *filesystem) : filesystem(*filesystem), oldFile(), newFile(), recordtype(){ }
 
     static std::string getQuery();
 
     std::string checkAndAssemble(Parser &parser) final;
     std::string run() final;
-    FileRecord& findFile(std::string& name) const ;
-    bool checkFile( std::string& name) const;
+    FileRecord & findFile(std::string& name);
+    bool checkFile( std::string& name);
 };
 
 #endif //MAIN_MOVE_H
