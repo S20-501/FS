@@ -3,11 +3,8 @@
 #include <iostream>
 
 #include "Enter.h"
-#include "../utils/utilFunctions.h"
-#include "../exceptions/FileCannotCreate.hpp"
-#include "../UtilsFunctions.hpp"
-
-//Enter::Enter()
+#include "exceptions/FileCannotCreate.hpp"
+#include "CommonFunctions.h"
 
 std::string Enter::getQuery(){
     return "enter";
@@ -25,11 +22,11 @@ std::string Enter::checkAndAssemble(Parser &parser) {
 }
 
 std::string Enter::checkAmount(const Parser &parser) {
-    if(parser.getKeyArgs().size() != 1){
-        return WRONGKEYSAMOUNT;
+    if(parser.getKeyArgs().size() + parser.getKeyArgs().size() < 2){
+        return NOT_ENOUGH_ARGS;
     }
-    if(parser.getPosArgs().size() != 1){
-        return WRONGPOSSAMOUNT;
+    if(parser.getKeyArgs().size() + parser.getKeyArgs().size() > 2){
+        return TOO_MANY_ARGS;
     }
 
     return "";
@@ -38,14 +35,14 @@ std::string Enter::checkAmount(const Parser &parser) {
 std::string Enter::setLength(const keyArgs_t &keys) {
     if(auto it = keys.find("length"); it != keys.end() || ((it = keys.find("l")) != keys.end())) {
         // convert to int
-        if(UtilsFunctions::convertToNumber(it->second, length)) return LENGTHCANTCONVERT;
+        if(MonCom::convertToNumber(it->second, length)) return LENGTH_CANT_CONVERT;
 
         // check restrictions
         if(length < 1 || 65535 < length){
-            return LENGTHRESTRICTED;
+            return LENGTH_RESTRICTED;
         }
     } else {
-        return NOLENGTHVALUE;
+        return NO_LENGTH_VALUE;
     }
 
     return "";
@@ -54,8 +51,16 @@ std::string Enter::setLength(const keyArgs_t &keys) {
 std::string Enter::setFilename(posArgs_t &poss) {
     filename = std::move(poss.back());
     poss.pop_back();
-    if(filename.size() > 10 || !UtilsFunctions::isASCII(filename) || checkFile(filename)){
-        return INCORRECTFILENAME;
+    if(filename.size() > 10){
+        return FILENAME_TOO_LONG;
+    }
+
+    if(!MonCom::isASCII(filename)){
+        return FILENAME_INCORRECT;
+    }
+
+    if(checkFile(filename)){
+        return FILENAME_EXISTS;
     }
 
     return "";
@@ -146,7 +151,7 @@ std::string Enter::findPlaceForFile() {
         }
         if(if_next_segment || file_record) break;
     }
-    if(file_record || !insert) return NOFILERECORD;
+    if(file_record || !insert) return NO_FILE_RECORD;
 
     return "";
 }
@@ -155,26 +160,26 @@ std::string Enter::run() {
         std::string errorMessage;
         if (errorMessage = findPlaceForFile(); !errorMessage.empty()) return errorMessage;
  }else
-       return NOSPACE;
-//   bool ident= false;
-//    for(int j =0;j<filesystem.filesystemInfo.segmentsCount; j++)
-//    for(auto & i : filesystem.filesystemSegment[j].fileRecord){
-//        if(i.recordType != REGULAR_FILE){
-//          const char* name= filename.c_str();
-//          strcpy(i.fileName,name);
-//          i.blockCount = static_cast<uint16_t>(length);
-//          i.recordType = static_cast<RecordType>(REGULAR_FILE);
-//          ident = true;
-//          break;
-//      }
-//       if(ident)
-//        break;
-//    }
+       return NO_SPACE;
     filesystem.serializer.save(filesystem);
     std::stringstream stream;
-    stream << "enter command executed, length: \"" << length <<
-            "\", filename: \"" << filename << "\"";
+    stream << "File created successfully.";
     return stream.str();
+}
+
+std::string Enter::processQuery(Parser &parser) {
+    auto poss = parser.getBoolArgs();
+    std::string resultMessage;
+
+    if(std::find(std::begin(poss), std::end(poss), "help") != std::end(poss)){
+        return help();
+    } else if(resultMessage = checkAndAssemble(parser); resultMessage.empty()) { // parser becomes invalid here, if no error
+        resultMessage = run();
+    } else{
+        resultMessage = COMMON_ERROR_MESSAGE + resultMessage;
+    }
+
+    return resultMessage;
 }
 
 std::string Enter::help() {

@@ -3,9 +3,6 @@
 #include <iostream>
 
 #include "Del.h"
-#include "../utils/utilFunctions.h"
-
-#include "../UtilsFunctions.hpp"
 
 std::string Del::getQuery(){
     return "del";
@@ -22,8 +19,12 @@ std::string Del::checkAndAssemble(Parser &parser) {
 }
 
 std::string Del::checkAmount(const Parser &parser) {
-    if(parser.getPosArgs().size() != 1){
-        return WRONGPOSSAMOUNT;
+    if(parser.getPosArgs().size() > 1){
+        return TOO_MANY_ARGS;
+    }
+
+    if(parser.getPosArgs().size() < 1){
+        return NOT_ENOUGH_ARGS;
     }
 
     return "";
@@ -33,8 +34,12 @@ std::string Del::setFilename(posArgs_t &poss) {
     filename = std::move(poss.back());
     poss.pop_back();
 
-    if(filename.empty() || !checkFile(filename)){
-        return INCORRECTFILENAME;
+    if(filename.empty()){
+        return NO_FILENAME_VALUE;
+    }
+
+    if(!checkFile(filename)){
+        return FILENAME_INCORRECT;
     }
 
     return "";
@@ -77,6 +82,21 @@ std::string Del::run() {
     std::stringstream stream;
     stream << "del command executed, file name: \"" << filename << "\"";
     return stream.str();
+}
+
+std::string Del::processQuery(Parser &parser) {
+    auto poss = parser.getBoolArgs();
+    std::string resultMessage;
+
+    if(std::find(std::begin(poss), std::end(poss), "help") != std::end(poss)){
+        return help();
+    } else if(resultMessage = checkAndAssemble(parser); resultMessage.empty()) { // parser becomes invalid here, if no error
+        resultMessage = run();
+    } else{
+        resultMessage = COMMON_ERROR_MESSAGE + resultMessage;
+    }
+
+    return resultMessage;
 }
 
 std::string Del::help() {

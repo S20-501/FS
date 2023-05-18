@@ -2,8 +2,8 @@
 #include <iostream>
 #include <cstring>
 #include "Move.h"
-#include "../utils/utilFunctions.h"
-#include "../exceptions/FileCannotCreate.hpp"
+#include "exceptions/FileCannotCreate.hpp"
+#include "exceptions/FileNotFoundException.hpp"
 
 std::string Move::getQuery(){
     return "move";
@@ -21,8 +21,12 @@ std::string Move::checkAndAssemble(Parser &parser) {
 }
 
 std::string Move::checkAmount(const Parser &parser) {
-    if(parser.getPosArgs().size() != 2){
-        return WRONGPOSSAMOUNT;
+    if(parser.getPosArgs().size() < 2){
+        return TOO_MANY_ARGS;
+    }
+
+    if(parser.getPosArgs().size() > 2){
+        return NOT_ENOUGH_ARGS;
     }
     return "";
 }
@@ -31,8 +35,12 @@ std::string Move::setOldFile(posArgs_t &poss) {
     oldFile = std::move(poss.back());
     poss.pop_back();
 
-    if(oldFile.empty() || !checkFile(oldFile)){
-        return INCORRECTOLDFILE;
+    if(oldFile.empty()){
+        return NO_OLD_FILENAME_VALUE;
+    }
+
+    if(!checkFile(oldFile)){
+        return OLD_FILENAME_EXISTS;
     }
     return "";
 }
@@ -40,8 +48,12 @@ std::string Move::setOldFile(posArgs_t &poss) {
 std::string Move::setNewFile(posArgs_t &poss) {
     newFile = std::move(poss.back());
     poss.pop_back();
-    if(newFile.empty() ||  !checkFile(newFile)){
-        return INCORRECTNEWFILE;
+    if(newFile.empty()){
+        return NO_NEW_FILENAME_VALUE;
+    }
+
+    if(!checkFile(newFile)){
+        return NEW_FILENAME_EXISTS;
     }
 
     return "";
@@ -80,7 +92,7 @@ FileRecord & Move::findFile(std::string& name) {
                 return i;
         }
     }
-    throw std::runtime_error("File not found");
+    throw FileNotFoundException();
 }
 
 std::string Move::run() {
@@ -106,12 +118,26 @@ std::string Move::run() {
         strcpy(oldfile.fileName,"12345.123");
         newfile = old;
     } else
-        return WRONGPOSSAMOUNT;
+        return TARGET_INSUFFICENT;
     std::stringstream stream;
     filesystem.serializer.save(filesystem);
-    stream << "move command executed, old file: \"" << oldFile <<
-            "\", new file: \"" << newFile << "\"";
+    stream << "File moved successfully.";
     return stream.str();
+}
+
+std::string Move::processQuery(Parser &parser) {
+    auto poss = parser.getBoolArgs();
+    std::string resultMessage;
+
+    if(std::find(std::begin(poss), std::end(poss), "help") != std::end(poss)){
+        return help();
+    } else if(resultMessage = checkAndAssemble(parser); resultMessage.empty()) { // parser becomes invalid here, if no error
+        resultMessage = run();
+    } else{
+        resultMessage = COMMON_ERROR_MESSAGE + resultMessage;
+    }
+
+    return resultMessage;
 }
 
 std::string Move::help() {
