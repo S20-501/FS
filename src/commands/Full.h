@@ -19,6 +19,8 @@ private:
     void setEmpty(const boolArgs_t &bools);
     void setHeader(const boolArgs_t &bools);
     void setHeaderonly(const boolArgs_t &bools);
+
+    static std::string formatResult(std::string& str);
 protected:
     std::string help() override;
 public:
