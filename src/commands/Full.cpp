@@ -2,12 +2,8 @@
 #include <iomanip>
 
 #include "Full.h"
-#include "../UtilsFunctions.hpp"
-
-#include "../dto/FileRecord.hpp"
-#include "../dto/FilesystemInfo.hpp"
-#include "../dto/FilesystemSegment.hpp"
-
+#include "CommonFunctions.h"
+#include "UtilsFunctions.hpp"
 
 std::string Full::getQuery(){
     return "full";
@@ -27,26 +23,25 @@ std::string Full::checkAndAssemble(Parser &parser)  {
 
 std::string Full::checkAmount(const Parser &parser) {
     if(parser.getBoolArgs().size() > 3){
-        return WRONGBOOLSAMOUNT;
+        return TOO_MANY_ARGS;
     }
 
     return "";
 }
 
 void Full::setEmpty(const boolArgs_t &bools) {
-    UtilsFunctions::findAndSetBoolArg(bools, empty, "empty", "e");
+    MonCom::findAndSetBoolArg(bools, empty, "empty", "e");
 }
 
 void Full::setHeader(const boolArgs_t &bools) {
-    UtilsFunctions::findAndSetBoolArg(bools, header, "header", "h");
+    MonCom::findAndSetBoolArg(bools, header, "header", "h");
 }
 
 void Full::setHeaderonly(const boolArgs_t &bools) {
-    UtilsFunctions::findAndSetBoolArg(bools, headeronly, "headeronly", "o");
+    MonCom::findAndSetBoolArg(bools, headeronly, "headeronly", "o");
 }
 
 std::string Full::run() {
-    // return fs_full(empty, header, headeronly);
     bool shouldPrintFree = empty;
     bool shouldPrintHeader = header;
     bool shouldPrintOnlyHeader = headeronly;
@@ -56,13 +51,13 @@ std::string Full::run() {
     char* tomLabel = filesystem.filesystemInfo.volumeLabel;
     uint16_t tomSize = filesystem.filesystemInfo.blocksCount;
 
-    if (shouldPrintOnlyHeader) {
-        ss << "Label: \"" << tomLabel << "\". Disk size: " << tomSize << ".\n";
-        return ss.str();
-    }
 
-    if (shouldPrintHeader) {
+    if (shouldPrintHeader || shouldPrintOnlyHeader) {
         ss << "Label: \"" << tomLabel << "\". Disk size: " << tomSize << ".\n";
+        if (shouldPrintOnlyHeader) {
+            std::string res = ss.str();
+            return UtilsFunctions::removeClosingEndl(res);
+        }
     }
 
     uint16_t segments_count = filesystem.filesystemInfo.segmentsCount;
@@ -70,29 +65,33 @@ std::string Full::run() {
         FilesystemSegment segment = filesystem.filesystemSegment[i];
 
         for (auto fileRecord : segment.fileRecord) {
+            if (fileRecord.recordType == RecordType::FREE && !shouldPrintFree) {
+                continue;
+            }
+
+            ss << std::setw(6) << std::setfill('0')
+                << std::oct << static_cast<unsigned int>(fileRecord.recordType) << std::dec << " ";
+
+            if (fileRecord.recordType == RecordType::FREE) {
+                ss << "free ";
+            } else if (fileRecord.recordType == RecordType::RECORDS_END){
+                ss << "end ";
+            } else {
+                ss << fileRecord.fileName;
+            }
+
+            ss << " " << fileRecord.blockCount << "\n";
+
             if (fileRecord.recordType == RecordType::RECORDS_END) {
-                ss << std::setw(6) << std::setfill('0') << std::oct << static_cast<unsigned int>(fileRecord.recordType) << " ";
-                ss << "end " << std::dec << fileRecord.blockCount << "\n";
                 break;
             }
-
-            if (shouldPrintFree) {
-                ss << std::setw(6) << std::setfill('0') << std::oct << static_cast<unsigned int>(fileRecord.recordType) << " ";
-                ss << fileRecord.fileName << " " << std::dec << fileRecord.blockCount << "\n";
-            }
-            else {
-                if (fileRecord.recordType != RecordType::FREE) {
-                    ss << std::setw(6) << std::setfill('0') << std::oct << static_cast<unsigned int>(fileRecord.recordType) << " ";
-                    ss << fileRecord.fileName << " " << std::dec << fileRecord.blockCount << "\n";
-                }
-            }
-
         }
     }
 
-    return ss.str();
+    std::string res = ss.str();
+    return UtilsFunctions::removeClosingEndl(res);
 }
 
 std::string Full::help() {
-    return "full help";
+    return "usage: full <--empty|-e> <--header|-h> <--headeronly|-o>";
 }

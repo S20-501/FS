@@ -1,13 +1,20 @@
 #ifndef MAIN_SQUEEZE_H
 #define MAIN_SQUEEZE_H
 
-#include "../commands/BaseCommand.h"
+#include "BaseCommand.h"
+#include "../Filesystem.hpp"
 
 class Squeeze : public BaseCommand {
+private:
+    Filesystem& filesystem;
+
+    static constexpr char TOO_MANY_ARGS[] = "Too many arguments (see SQUEEZE --help).";
+
+    std::string checkAmount(const Parser &parser);
 protected:
     std::string help() override;
 public:
-    Squeeze();
+    explicit Squeeze(Filesystem* filesystem) : filesystem(*filesystem) {}
 
     static std::string getQuery();
 

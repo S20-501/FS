@@ -2,7 +2,7 @@
 #define MAIN_FULL_H
 
 #include "BaseCommand.h"
-#include "../Filesystem.hpp"
+#include "Filesystem.hpp"
 
 class Full : public BaseCommand {
 private:
@@ -12,13 +12,14 @@ private:
 
     Filesystem &filesystem;
 
-    static constexpr char WRONGBOOLSAMOUNT[] = "invalid boolean values amount";
+    static constexpr char TOO_MANY_ARGS[] = "Too many arguments (see FULL --help).";
 
     std::string checkAmount(const Parser &parser);
 
     void setEmpty(const boolArgs_t &bools);
     void setHeader(const boolArgs_t &bools);
     void setHeaderonly(const boolArgs_t &bools);
+
 protected:
     std::string help() override;
 public:
