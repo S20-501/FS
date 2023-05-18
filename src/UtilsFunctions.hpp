@@ -52,6 +52,20 @@ public:
             boolVar = false;
         }
     }
+
+    /**
+     * Подготавливает вывод команд к отображению на монитор. Убирает завершающий перевод строки.
+     *
+     * @param str исходный текст для вывода
+     * @return текст для вывода без завершающего перевода строки
+     */
+    static std::string removeClosingEndl(std::string& str) {
+        size_t len = str.length();
+        if (str.at(len - 1) == '\n') {
+            str.erase(len - 1);
+        }
+        return str;
+    }
 };
 
 #endif //FS_UTILS_FUNCTIONS_HPP
