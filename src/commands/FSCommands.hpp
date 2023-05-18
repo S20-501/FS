@@ -19,13 +19,13 @@
 
 typedef std::tuple<
     Init,
-//    Full,
-//    Empty,
-//    Enter,
+    Full,
+    Empty,
+    Enter,
 //    Copy,
-//    Move,
-//    Del,
-//    Squeeze,
+    Move,
+    Del,
+    Squeeze,
     Help
 > FSCommandsTuple;
 
