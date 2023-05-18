@@ -30,8 +30,6 @@ private:
 
     std::string setLength(const keyArgs_t &keys);
     std::string setFilename(posArgs_t &poss);
-protected:
-    std::string help() override;
 public:
     explicit Enter(Filesystem *filesystem) : filesystem(*filesystem), filename(){ }
 
@@ -41,6 +39,9 @@ public:
     bool checkFile( std::string& name);
     std::string findPlaceForFile();
     std::string run() final;
+
+    std::string help() override;
+    static std::string description();
 
     std::string processQuery(Parser &parser) final;
 };

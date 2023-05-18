@@ -18,8 +18,6 @@ private:
     void setEmpty(const boolArgs_t &bools);
 
     static void updateAvailableSizeBlocks(std::map<int, int>& availableSizeBlocks, int keyToAdd, int valueToAdd);
-protected:
-    std::string help() override;
 public:
     explicit Empty(Filesystem *filesystem) : filesystem(*filesystem) {}
 
@@ -27,6 +25,8 @@ public:
 
     std::string checkAndAssemble(Parser &parser) final;
     std::string run() final;
+    std::string help() override;
+    static std::string description();
 };
 
 #endif //MAIN_EMPTY_H

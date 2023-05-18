@@ -95,3 +95,7 @@ std::string Full::run() {
 std::string Full::help() {
     return "usage: full <--empty|-e> <--header|-h> <--headeronly|-o>";
 }
+
+std::string Full::description() {
+    return "lists all files";
+}

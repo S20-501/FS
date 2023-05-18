@@ -186,3 +186,6 @@ std::string Enter::help() {
     return "usage: enter -l <length_file> \"filename\"";
 }
 
+std::string Enter::description() {
+    return "creates new file";
+}

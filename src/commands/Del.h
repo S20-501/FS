@@ -21,8 +21,6 @@ private:
     std::string checkAmount(const Parser &parser);
 
     std::string setFilename(posArgs_t &poss);
-protected:
-    std::string help() override;
 public:
 //    explicit Del(Filesystem *filesystem) : filesystem(*filesystem), filename(){ }
     explicit Del(Filesystem *filesystem) : filesystem(*filesystem), filename(), recordtype(){ }
@@ -32,6 +30,9 @@ public:
     bool checkFile( std::string& name);
     FileRecord& findFile(std::string& name) const;
     std::string run() final;
+
+    std::string help() override;
+    static std::string description();
 
     std::string processQuery(Parser &parser) final;
 };

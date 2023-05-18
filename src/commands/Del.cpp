@@ -102,3 +102,7 @@ std::string Del::processQuery(Parser &parser) {
 std::string Del::help() {
     return R"(usage: del "filename")";
 }
+
+std::string Del::description() {
+    return "deletes file";
+}

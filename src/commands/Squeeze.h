@@ -11,8 +11,6 @@ private:
     static constexpr char TOO_MANY_ARGS[] = "Too many arguments (see SQUEEZE --help).";
 
     std::string checkAmount(const Parser &parser);
-protected:
-    std::string help() override;
 public:
     explicit Squeeze(Filesystem* filesystem) : filesystem(*filesystem) {}
 
@@ -20,6 +18,8 @@ public:
 
     std::string checkAndAssemble(Parser &parser) final;
     std::string run() final;
+    std::string help() override;
+    static std::string description();
 };
 
 #endif //MAIN_SQUEEZE_H

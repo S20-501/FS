@@ -143,3 +143,7 @@ std::string Move::processQuery(Parser &parser) {
 std::string Move::help() {
     return R"(usage: move "old filename" "new filename")";
 }
+
+std::string Move::description() {
+    return "move one file in the place of another";
+}

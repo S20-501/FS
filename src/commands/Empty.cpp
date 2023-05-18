@@ -144,3 +144,7 @@ void Empty::updateAvailableSizeBlocks(std::map<int, int> &availableSizeBlocks, i
             availableSizeBlocks.insert( std::pair<int, int>(keyToAdd, valueToAdd) );
         }
 }
+
+std::string Empty::description() {
+    return "prints filesystem statistics";
+}

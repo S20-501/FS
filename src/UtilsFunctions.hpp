@@ -5,6 +5,8 @@
 #ifndef FS_UTILS_FUNCTIONS_HPP
 #define FS_UTILS_FUNCTIONS_HPP
 
+#include "commands/FSCommands.hpp"
+
 class UtilsFunctions{
 public:
     static bool isASCII(const std::string &str){
@@ -65,6 +67,42 @@ public:
             str.erase(len - 1);
         }
         return str;
+    }
+
+    /**
+     * Конец рекурсии для кортежа команд, выводит завершающее сообщение справки.
+     *
+     * @tparam index Индекс класса команды в кортеже
+     * @tparam Args Дополнительные аргументы, необходимые конструктору класса команды
+     * @return Завершающая строка справочного сообщения
+     */
+    template<std::size_t index, class ...Args>
+    static typename std::enable_if<index == std::tuple_size_v<FSCommandsTuple>, std::string>::type
+    forEachHelp([[maybe_unused]] Args... args){
+        return "";
+    }
+
+    /**
+     * Рекурсивно проходит по кортежу команд и выводит для них справку.
+     *
+     * @tparam index Индекс класса команды в кортеже
+     * @tparam Args Дополнительные аргументы, необходимые конструктору класса команды
+     * @return Собранная строка справочного сообщения
+     */
+    template<std::size_t index = 0, class ...Args>
+    static typename std::enable_if<index < std::tuple_size_v<FSCommandsTuple>, std::string>::type
+    forEachHelp(Args... args){
+        using CommandClass = std::tuple_element_t<index, FSCommandsTuple>;
+
+        std::stringstream str;
+
+        auto command = std::make_shared<CommandClass>(args...);
+
+        str << "    " << CommandClass::getQuery() << " - " << CommandClass::description() << std::endl
+            << "        " << command->help() << std::endl
+            << forEachHelp<index + 1>(args...);
+
+        return str.str();
     }
 };
 

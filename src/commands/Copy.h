@@ -16,8 +16,6 @@ private:
 
     std::string setOldFile(posArgs_t &poss);
     std::string setNewFile(posArgs_t &poss);
-protected:
-    std::string help() override;
 public:
     Copy();
 
@@ -25,6 +23,8 @@ public:
 
     std::string checkAndAssemble(Parser &parser) final;
     std::string run() final;
+    std::string help() override;
+    static std::string description();
 };
 
 #endif //MAIN_CP_H

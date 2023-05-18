@@ -80,3 +80,7 @@ std::string Squeeze::run() {
 std::string Squeeze::help() {
     return "usage: squeeze";
 }
+
+std::string Squeeze::description() {
+    return "performs defragmentation";
+}

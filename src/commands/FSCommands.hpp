@@ -17,16 +17,18 @@
 
 #include "FSCommandFactory.hpp"
 
-typedef FSCommandFactory<std::tuple<
+typedef std::tuple<
     Init,
     Full,
     Empty,
     Enter,
-//        Copy,
+//    Copy,
     Move,
     Del,
-    Squeeze
-//        Help
-> > FSCommands;
+    Squeeze,
+    Help
+> FSCommandsTuple;
+
+typedef FSCommandFactory<FSCommandsTuple> FSCommands;
 
 #endif //FS_FSCOMMANDS_HPP

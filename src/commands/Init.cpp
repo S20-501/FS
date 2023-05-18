@@ -138,6 +138,10 @@ std::string Init::help() {
     return "usage: init -b <blocks> -s <segments> \"LABEL\"";
 }
 
+std::string Init::description() {
+    return "initializes filesystem";
+}
+
 std::string Init::processQuery(Parser &parser) {
     auto poss = parser.getBoolArgs();
     std::string resultMessage;
