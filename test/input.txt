@@ -1,0 +1,99 @@
+init -b 100 -s 1
+enter -l 20 "file1.txt"
+enter -l 30 "file3.txt"
+enter -l 20 "file2.txt"
+del "file3.txt"
+enter -l 40 "file4.txt"
+squeeze 
+enter -l 40 "file4.txt"
+del "file4.txt"
+
+init -b 100 -s 1
+enter -l 20 "file1.txt"
+enter -l 10 "file2.txt"
+enter -l 10 "file3.txt"
+enter -l 10 "file4.txt"
+enter -l 10 "file5.txt"
+enter -l 10 "file6.txt"
+del "file6.txt"
+del "file3.txt"
+empty 
+del "file1.txt"
+del "file2.txt"
+del "file4.txt"
+del "file5.txt"
+
+init -b 100 -s 1
+enter -l 10 "file1.txt"
+enter -l 40 "file2.txt"
+enter -l 10 "file3.txt"
+enter -l 30 "file4.txt"
+enter -l 10 "file5.txt"
+del "file4.txt"
+del "file2.txt"
+enter -l 30 "file6.txt"
+empty
+del "file1.txt"
+del "file3.txt"
+del "file5.txt"
+   
+enter -l 40 "file1.txt"
+enter -l 40 "file2.txt"
+del "file1.txt"
+enter -l 30 "file1.txt"
+enter -l 10 "file3.txt"
+squeeze
+enter -l 10 "file3.txt"
+
+del "file1.txt"
+del "file3.txt"
+del "file2.txt"
+enter -l 20 "file1.txt"
+enter -l 1 "file2.txt"
+enter -l 1 "file3.txt"
+enter -l 1 "file4.txt"
+enter -l 1 "file5.txt"
+enter -l 1 "file6.txt"
+// еще 57 раз
+del "file1.txt"
+del "file3.txt"
+del "file5.txt"
+enter -l 21 "file7.txt"
+squeeze
+enter -l 21 "file7.txt"
+
+init -b 70000 -s 1
+
+init -b 0 -s 1
+
+init -b -3 -s 1
+
+init -b 70 -s 100
+
+init -b 70 -s 0
+
+init -b 70 -s -5
+
+init -b 7.5 -s 1
+
+init -b 70 -s 1.5
+
+init -b 100 -s 1
+enter -l 150 "file.txt"
+enter -l 1.5 "file.txt"
+enter -l 20 "file123456789.txt"
+enter -l 20 "file.txt"
+enter -l 30 "file.txt"
+del "file1.txt"
+enter -l 20 "file1.txt"
+move "file1.txt" "file.txt"
+del "file.txt"
+enter -l 30 "file2.txt"
+move "file2.txt" "file1.txt"
+enter -l 10 "file3.txt"
+enter -l 40 "file4.txt"
+move "file4.txt" "file2.txt"
+move "file.txt" "file2.txt"
+move "file2.txt" "file.txt"
+move "file2.txt" "file2.txt"
+exit

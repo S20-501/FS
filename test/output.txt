@@ -1,0 +1,123 @@
+Filesystem created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File deleted successfully.
+Error in creating file: It is not possible to create a record on disk. Perform disk SQUEEZE.
+Free blocks: 60
+Disk size: 100
+Segments count: 1
+Segment 1, records count: 3/63
+File size creation limit: 60
+Available file records: 60
+File created successfully.
+File deleted successfully.
+
+Filesystem created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File deleted successfully.
+File deleted successfully.
+Free blocks: 30
+Disk size: 100
+Segments count: 1
+Segment 1, records count: 5/63
+File size creation limit: 50
+Available file records: 58
+File deleted successfully.
+File deleted successfully.
+File deleted successfully.
+File deleted successfully.
+
+Filesystem created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File deleted successfully.
+File deleted successfully.
+File created successfully.
+Free blocks: 40
+Disk size: 100
+Segments count: 1
+Segment 1, records count: 4/63
+File size creation limit: 40
+Available file records: 58
+File deleted successfully.
+File deleted successfully.
+File deleted successfully.
+
+File created successfully.
+File created successfully.
+File deleted successfully.
+File created successfully.
+Error in creating file: It is not possible to create a record on disk. Perform disk SQUEEZE.
+Free blocks: 30
+Disk size: 100
+Segments count: 1
+Segment 1, records count: 2/63
+File size creation limit: 30
+File created successfully.
+
+File deleted successfully.
+File deleted successfully.
+File deleted successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+File created successfully.
+....
+File deleted successfully.
+File deleted successfully.
+File deleted successfully.
+Error in creating file: It is not possible to create a record on disk. Perform disk SQUEEZE.
+Free blocks: 39
+Disk size: 100
+Segments count: 1 
+Segment 1, records count: 61
+File size creation limit: 39
+File created successfully. 
+
+Error in creating filesystem: Blocks must be in range [1, 65535].
+
+Error in creating filesystem: Blocks must be in range [1, 65535].
+
+Error in creating filesystem: blocks must be in range [1, 65535]
+
+Error in creating filesystem: Segments must be in range [1, 31].
+
+Error in creating filesystem: Segments must be in range [1, 31].
+
+Error in creating filesystem: segments must be in range [1, 31]
+
+Error in creating filesystem: blocks has incorrect format.
+
+Error in creating filesystem: segments has incorrect format.
+
+Filesystem created successfully.
+Error in creating file: File size creation limit exceeded.
+Error in creating file: lenght has incorrect format.
+Error in creating file: The file name is too long (maximum 10 chars).
+File created successfully.
+Error in creating file: The file with that name already exists on disk.
+Error in delete file: File “file1.txt” not found.
+File created successfully.
+File moved successfully.
+Error in delete file: File “file.txt” not found.
+File created successfully.
+File moved successfully.
+File created successfully.
+File created successfully.
+Error in move file: The size of the target file is insufficient to store the source.
+Error in move file: File “file.txt” not found
+Error in move file: File “file.txt” not found
+Error in move file: The file with that name already exists on disk.
+change da world
+my final message. Goodb ye.
