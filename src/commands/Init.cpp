@@ -116,14 +116,14 @@ std::string Init::run() {
     strncpy(filesystem.filesystemInfo.volumeLabel, label.c_str(), 11);
 
     for (int i = 0; i < segments; i++){
-        filesystem.filesystemSegment[i].fileRecord[0].recordType = RECORDS_END;
         filesystem.filesystemSegment[i].segmentHeader.segmentsCount = segments;
         filesystem.filesystemSegment[i].segmentHeader.filesStart = currentSegmentFilesStart;
 
         currentSegmentFilesStart += blocksPerSegment;
 
-        for (int j = 0; j < FilesystemSegment::FILE_RECORDS_COUNT; ++j) {
-            filesystem.filesystemSegment[i].fileRecord[j].blockCount = static_cast<uint16_t>(0);
+        for (auto & j : filesystem.filesystemSegment[i].fileRecord) {
+            j.recordType = RECORDS_END;
+            j.blockCount = 0;
         }
     }
 
