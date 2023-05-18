@@ -23,3 +23,7 @@ std::string Empty::run() {
 std::string Empty::help() {
     return "empty help";
 }
+
+std::string Empty::description() {
+    return "prints filesystem statistics";
+}

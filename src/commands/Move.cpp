@@ -61,3 +61,7 @@ std::string Move::run() {
 std::string Move::help() {
     return "move help";
 }
+
+std::string Move::description() {
+    return "move one file in the place of another";
+}

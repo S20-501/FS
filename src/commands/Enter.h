@@ -21,8 +21,6 @@ private:
 
     std::string setLength(const keyArgs_t &keys);
     std::string setFilename(posArgs_t &poss);
-protected:
-    std::string help() override;
 public:
     explicit Enter(Filesystem *filesystem) : filesystem(*filesystem), filename(){ }
 
@@ -30,6 +28,8 @@ public:
 
     std::string checkAndAssemble(Parser &parser) final;
     std::string run() final;
+    std::string help() override;
+    static std::string description();
 };
 
 #endif //MAIN_ENTER_H

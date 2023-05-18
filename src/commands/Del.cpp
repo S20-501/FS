@@ -48,3 +48,7 @@ std::string Del::run() {
 std::string Del::help() {
     return "del help";
 }
+
+std::string Del::description() {
+    return "deletes file";
+}

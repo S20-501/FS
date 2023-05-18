@@ -4,8 +4,6 @@
 #include "../commands/BaseCommand.h"
 
 class Empty : public BaseCommand {
-protected:
-    std::string help() override;
 public:
     Empty();
 
@@ -13,6 +11,8 @@ public:
 
     std::string checkAndAssemble(Parser &parser) final;
     std::string run() final;
+    std::string help() override;
+    static std::string description();
 };
 
 #endif //MAIN_EMPTY_H

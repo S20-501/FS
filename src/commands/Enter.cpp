@@ -71,3 +71,7 @@ std::string Enter::run() {
 std::string Enter::help() {
     return "enter help";
 }
+
+std::string Enter::description() {
+    return "creates new file";
+}

@@ -52,3 +52,7 @@ std::string Full::run() {
 std::string Full::help() {
     return "full help";
 }
+
+std::string Full::description() {
+    return "lists all files";
+}

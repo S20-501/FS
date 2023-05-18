@@ -31,8 +31,6 @@ private:
     std::string setBlocks(const keyArgs_t &keys);
     std::string setSegments(const keyArgs_t &keys);
     std::string setLabel(posArgs_t &poss);
-protected:
-    std::string help() override;
 public:
     explicit Init(Filesystem *filesystem) : filesystem(*filesystem), label(){ }
 
@@ -42,6 +40,9 @@ public:
     std::string run() final;
 
     std::string processQuery(Parser &parser) final;
+    std::string help() override;
+
+    static std::string description();
 };
 
 

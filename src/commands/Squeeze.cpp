@@ -22,3 +22,7 @@ std::string Squeeze::run() {
 std::string Squeeze::help() {
     return "squeeze help";
 }
+
+std::string Squeeze::description() {
+    return "performs defragmentation";
+}

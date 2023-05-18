@@ -16,8 +16,6 @@ private:
     void setEmpty(const boolArgs_t &bools);
     void setHeader(const boolArgs_t &bools);
     void setHeaderonly(const boolArgs_t &bools);
-protected:
-    std::string help() override;
 public:
     Full();
 
@@ -25,6 +23,8 @@ public:
 
     std::string checkAndAssemble(Parser &parser) final;
     std::string run() final;
+    std::string help() override;
+    static std::string description();
 };
 
 

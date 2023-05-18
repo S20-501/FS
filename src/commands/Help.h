@@ -2,19 +2,21 @@
 #define MAIN_HELP_H
 
 #include "BaseCommand.h"
+#include "Filesystem.hpp"
 
 class Help : public BaseCommand {
 private:
-    static constexpr char helpMessage[] = "FSmonitor help";
-protected:
-    std::string help() override;
+    Filesystem &filesystem;
+    static constexpr char helpMessage[] = "usage: help";
 public:
-    Help();
+    explicit Help(Filesystem *filesystem) : filesystem(*filesystem){ }
 
     static std::string getQuery();
 
     std::string checkAndAssemble(Parser &parser) final;
     std::string run() final;
+    std::string help() override;
+    static std::string description();
 };
 
 #endif //MAIN_HELP_H

@@ -61,3 +61,7 @@ std::string Copy::run() {
 std::string Copy::help() {
     return "copy help";
 }
+
+std::string Copy::description() {
+    return "copy help";
+}
