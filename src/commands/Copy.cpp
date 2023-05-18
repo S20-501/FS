@@ -63,5 +63,5 @@ std::string Copy::help() {
 }
 
 std::string Copy::description() {
-    return "copy help";
+    return "copies one file in the place of another";
 }

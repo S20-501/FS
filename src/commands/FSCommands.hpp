@@ -21,7 +21,7 @@ typedef std::tuple<
     Init,
 //    Full,
 //    Empty,
-    Enter,
+//    Enter,
 //    Copy,
 //    Move,
 //    Del,
