@@ -2,20 +2,29 @@
 #define MAIN_ENTER_H
 
 #include "BaseCommand.h"
-#include "../Filesystem.hpp"
+#include "Filesystem.hpp"
 
 class Enter : public BaseCommand {
 private:
     Filesystem &filesystem;
     int length = 0;
     std::string filename;
+    bool have_such_number_of_bytes = false;
+    int number_not_free_blocks=0;
+    int max_length_file= 0;
 
-    static constexpr char WRONGKEYSAMOUNT[] = "invalid key values amount";
-    static constexpr char WRONGPOSSAMOUNT[] = "invalid positional values amount";
-    static constexpr char LENGTHCANTCONVERT[] = "length incorrect value";
-    static constexpr char LENGTHRESTRICTED[] = "length incorrect value";
-    static constexpr char NOLENGTHVALUE[] = "no length key value";
-    static constexpr char INCORRECTFILENAME[] = "label value is incorrect";
+    static constexpr char COMMON_ERROR_MESSAGE[] = "Error in creating file: ";
+
+    static constexpr char NOT_ENOUGH_ARGS[] = "Not enough arguments (see ENTER --help).";
+    static constexpr char TOO_MANY_ARGS[] = "Too many arguments (see ENTER --help).";
+    static constexpr char LENGTH_CANT_CONVERT[] = "Length has incorrect format.";
+    static constexpr char LENGTH_RESTRICTED[] = "Length must be in range [1, 65535].";
+    static constexpr char NO_LENGTH_VALUE[] = "Length can’t be empty.";
+    static constexpr char FILENAME_TOO_LONG[] = "The filename is too long (maximum 10 chars).";
+    static constexpr char FILENAME_INCORRECT[] = "Filename has incorrect format.";
+    static constexpr char FILENAME_EXISTS[] = "The file with that name already exists on disk.";
+    static constexpr char NO_FILE_RECORD[] = "It is not possible to create a record on disk. Perform disk SQUEEZE.";
+    static constexpr char NO_SPACE[] = "There is no such free space on disk. Perform disk SQUEEZE or clear some space.";
 
     std::string checkAmount(const Parser &parser);
 
@@ -29,7 +38,11 @@ public:
     static std::string getQuery();
 
     std::string checkAndAssemble(Parser &parser) final;
+    bool checkFile( std::string& name);
+    std::string findPlaceForFile();
     std::string run() final;
+
+    std::string processQuery(Parser &parser) final;
 };
 
 #endif //MAIN_ENTER_H
