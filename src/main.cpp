@@ -48,7 +48,7 @@ int main() {
 #endif //MONITOR_WITHFILE
 
     monitor.setPrompt("FS> ");
-    monitor.setExitMessage("change da world\nmy final message. Goodbye.\n");
+    monitor.setExitMessage("change da world\nmy final message. Good bye.\n");
 
     try {
         monitor.run();
