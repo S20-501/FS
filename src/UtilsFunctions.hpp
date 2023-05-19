@@ -25,7 +25,11 @@ public:
     template<class Num_t>
     static bool convertToNumber(const std::string &strValue, Num_t& numberVar){
         try {
-            numberVar = std::stoi(strValue);
+            std::size_t pos{};
+            numberVar = std::stoi(strValue, &pos);
+            if (pos != strValue.length()) {
+                return true;
+            }
         } catch (std::out_of_range const &ex) {
             return true;
         } catch (std::invalid_argument const &ex) {
