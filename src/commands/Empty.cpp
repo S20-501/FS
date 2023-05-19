@@ -37,20 +37,30 @@ std::string Empty::run() {
     std::map<int, int> availableSizeBlocks;  //key - blockCount, value - count of files with blockCount key
 
     uint16_t segments_count = filesystem.filesystemInfo.segmentsCount;
-    for (uint16_t i = 0; i < segments_count; ++i) {
-        FilesystemSegment segment = filesystem.filesystemSegment[i];
+    for (uint16_t currentSegmentIndex = 0; currentSegmentIndex < segments_count; ++currentSegmentIndex) {
+        FilesystemSegment currentSegment = filesystem.filesystemSegment[currentSegmentIndex];
         int countOfBusyBlocksInSegment = 0;
+        int countOfFreeBlocksInSegment = 0;
 
-        for (int j = 0; j < FilesystemSegment::FILE_RECORDS_COUNT; ++j) {
-            FileRecord fileRecord = segment.fileRecord[j];
-
-            if ( !(fileRecord.recordType == RecordType::FREE || fileRecord.recordType == RecordType::RECORDS_END) ) {
-                countOfBusyBlocksInSegment += fileRecord.blockCount;
-                continue;
-            }
+        for (int currentRecordIndex = 0; currentRecordIndex < FilesystemSegment::FILE_RECORDS_COUNT; ++currentRecordIndex) {
+            FileRecord fileRecord = currentSegment.fileRecord[currentRecordIndex];
 
             int countOfFreeBlocksToAdd;
             int countOfAvailableRecordsToAdd;
+
+            if ( !(fileRecord.recordType == RecordType::FREE || fileRecord.recordType == RecordType::RECORDS_END) ) {
+                countOfBusyBlocksInSegment += fileRecord.blockCount;
+
+                if (currentRecordIndex == FilesystemSegment::FILE_RECORDS_COUNT - 1) {  //last and not end record
+                    int segmentSize = UtilsFunctions::getSegmentSizeInBlocks(filesystem,currentSegmentIndex);
+                    int countOfFreeBlocksLeft = segmentSize - countOfBusyBlocksInSegment - countOfFreeBlocksInSegment;
+                    countOfFreeBlocksToAdd = countOfFreeBlocksLeft;
+                    countOfFreeBlocksInSegment += countOfFreeBlocksToAdd;
+                    countOfFreeBlocks += countOfFreeBlocksToAdd;
+                }
+
+                continue;
+            }
 
             if (fileRecord.recordType == RecordType::FREE) {
                 int blockCount = fileRecord.blockCount;
@@ -66,8 +76,11 @@ std::string Empty::run() {
             }
 
             else {   //END Record
-                int countOfFreeBlocksEnd = filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - countOfBusyBlocksInSegment;
-                int availableFileRecordsCountEnd = FilesystemSegment::FILE_RECORDS_COUNT - j - 1;
+                int segmentSize = UtilsFunctions::getSegmentSizeInBlocks(filesystem,currentSegmentIndex);
+
+                int countOfFreeBlocksEnd = segmentSize - countOfBusyBlocksInSegment - countOfFreeBlocksInSegment;
+
+                int availableFileRecordsCountEnd = FilesystemSegment::FILE_RECORDS_COUNT - currentRecordIndex - 1;
                 countOfFreeBlocksToAdd = countOfFreeBlocksEnd;
                 countOfAvailableRecordsToAdd = availableFileRecordsCountEnd;
                 if (empty) {
@@ -80,6 +93,7 @@ std::string Empty::run() {
                 }
             }
 
+            countOfFreeBlocksInSegment += countOfFreeBlocksToAdd;
             countOfFreeBlocks += countOfFreeBlocksToAdd;
             availableFileRecordsCount += countOfAvailableRecordsToAdd;
             if (countOfFreeBlocksToAdd > maxFileSizeCreationLimit) {
@@ -101,7 +115,7 @@ std::string Empty::run() {
         int recordsCount = 0;
 
         for (auto fileRecord : segment.fileRecord) {
-            if (fileRecord.recordType != RecordType::FREE) {
+            if (fileRecord.recordType != RecordType::FREE && fileRecord.recordType != RecordType::RECORDS_END) {
                 ++recordsCount;
             }
 
@@ -148,3 +162,4 @@ void Empty::updateAvailableSizeBlocks(std::map<int, int> &availableSizeBlocks, i
 std::string Empty::description() {
     return "prints filesystem statistics";
 }
+
