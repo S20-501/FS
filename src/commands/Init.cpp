@@ -3,7 +3,8 @@
 
 #include "Init.h"
 #include "exceptions/FileCannotCreate.hpp"
-#include "../CommonFunctions/CommonFunctions.h"
+#include "UtilsFunctions.hpp"
+#include "CommonFunctions.h"
 
 std::string Init::getQuery(){
     return "init";
@@ -41,7 +42,7 @@ std::string Init::setBlocks(const keyArgs_t &keys) {
     if(auto it = keys.find("blocks"); it != keys.end() || ((it = keys.find("b")) != keys.end())) {
         // convert to int
         int intBlocks = 0;
-        if(MonCom::convertToNumber(it->second, intBlocks)) return BLOCKS_CANT_CONVERT;
+        if(UtilsFunctions::convertToNumber(it->second, intBlocks)) return BLOCKS_CANT_CONVERT;
 
         // check restrictions
         if (intBlocks < 1 || 65535 < intBlocks) {
@@ -60,7 +61,7 @@ std::string Init::setSegments(const keyArgs_t &keys) {
     if(auto it = keys.find("segments"); it != keys.end() || ((it = keys.find("s")) != keys.end())){
         // convert to int
         int intSegments = 0;
-        if (MonCom::convertToNumber(it->second, intSegments)) return SEGMENTS_CANT_CONVERT;
+        if (UtilsFunctions::convertToNumber(it->second, intSegments)) return SEGMENTS_CANT_CONVERT;
 
         // check restrictions
         if(intSegments < 1 || 31 < intSegments){
