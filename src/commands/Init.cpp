@@ -106,7 +106,7 @@ std::string Init::run() {
 
     filesystem.filesystemSegment = new FilesystemSegment[segments];
 
-    uint16_t fsHeaderSize = SEGMENTS_START_BLOCK + segments + SEGMENT_LENGTH_IN_BLOCKS;
+    uint16_t fsHeaderSize = SEGMENTS_START_BLOCK + segments + static_cast<uint16_t>(SEGMENT_LENGTH_IN_BLOCKS);
     uint16_t currentSegmentFilesStart = fsHeaderSize;
     uint16_t blocksPerSegment = blocks / segments;
 
@@ -119,7 +119,7 @@ std::string Init::run() {
         filesystem.filesystemSegment[i].segmentHeader.segmentsCount = segments;
         filesystem.filesystemSegment[i].segmentHeader.filesStart = currentSegmentFilesStart;
 
-        currentSegmentFilesStart += blocksPerSegment;
+        currentSegmentFilesStart += static_cast<uint16_t>(blocksPerSegment);
 
         for (auto & j : filesystem.filesystemSegment[i].fileRecord) {
             j.recordType = RECORDS_END;
