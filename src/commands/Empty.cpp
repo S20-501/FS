@@ -80,7 +80,7 @@ std::string Empty::run() {
 
                 int countOfFreeBlocksEnd = segmentSize - countOfBusyBlocksInSegment - countOfFreeBlocksInSegment;
 
-                int availableFileRecordsCountEnd = FilesystemSegment::FILE_RECORDS_COUNT - currentRecordIndex - 1;
+                int availableFileRecordsCountEnd = FilesystemSegment::FILE_RECORDS_COUNT - currentRecordIndex;
                 countOfFreeBlocksToAdd = countOfFreeBlocksEnd;
                 countOfAvailableRecordsToAdd = availableFileRecordsCountEnd;
                 if (empty) {
