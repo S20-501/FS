@@ -5,6 +5,7 @@
 #include "Enter.h"
 #include "exceptions/FileCannotCreate.hpp"
 #include "CommonFunctions.h"
+#include "UtilsFunctions.hpp"
 
 std::string Enter::getQuery(){
     return "enter";
@@ -50,7 +51,7 @@ std::string Enter::setLength(const keyArgs_t &keys) {
 std::string Enter::setFilename(posArgs_t &poss) {
     filename = std::move(poss.back());
     poss.pop_back();
-    if(filename.size() > 10){
+    if(filename.size() >= 10){
         return FILENAME_TOO_LONG;
     }
 
@@ -70,22 +71,24 @@ bool Enter::checkFile( std::string& name) {
     for (int j = 0; j < filesystem.filesystemInfo.segmentsCount; j++) {
         number_not_free_blocks = 0;
         number_end_blocks = 0;
-        for (auto &i: filesystem.filesystemSegment[j].fileRecord) {
-            if(i.recordType != RECORDS_END)
-                number_end_blocks += static_cast<int>(i.blockCount);
-            if (i.recordType == RECORDS_END || i.recordType == FREE) {
-                if(max_length_file < i.blockCount)
-                    max_length_file = i.blockCount;
-                if(i.recordType == RECORDS_END) {
-                    if ((filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - number_not_free_blocks) > max_length_file)
-                        max_length_file = ( filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - number_not_free_blocks);
-                }
-                if(i.blockCount == length) {
+        for (int i=0; i<FilesystemSegment::FILE_RECORDS_COUNT; i++) {
+            auto &file =  filesystem.filesystemSegment[j].fileRecord[i];
+            if(file.recordType != RECORDS_END)
+                number_end_blocks += static_cast<int>(file.blockCount);
+            if(file.recordType == RECORDS_END || i+1==FilesystemSegment::FILE_RECORDS_COUNT) {
+                if ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_not_free_blocks) > max_length_file)
+                    max_length_file = ( UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_not_free_blocks);
+//                    std::cerr<<max_length_file<<std::endl;
+            }if (file.recordType == RECORDS_END || file.recordType == FREE) {
+                if( max_length_file < file.blockCount)
+                    max_length_file = file.blockCount;
+
+                if(file.blockCount == length) {
                     have_such_number_of_bytes = true;
                 }
             }else {
-                number_not_free_blocks += i.blockCount;
-                if (i.fileName == name) {
+                number_not_free_blocks += file.blockCount;
+                if (file.fileName == name) {
                     return true;
                 }
             }
@@ -98,46 +101,50 @@ bool Enter::checkFile( std::string& name) {
 }
 std::string Enter::findPlaceForFile() {
     bool insert;
-    bool file_record = false;
+    bool file_record;
     bool if_next_segment  =false;
     int delta_length = 0;
     FileRecord buf;
     int number_end_blocks;
     for (int j = 0; j < filesystem.filesystemInfo.segmentsCount; j++){
+        file_record = false;
         number_end_blocks = 0;
-        for (auto &i: filesystem.filesystemSegment[j].fileRecord) {
+        for (int i=0; i<FilesystemSegment::FILE_RECORDS_COUNT; i++) {
+            auto &file = filesystem.filesystemSegment[j].fileRecord[i];
             if(insert){
                 if(delta_length!=0){
-                    buf = i;
-                    i.recordType = FREE;
-                    i.blockCount = static_cast<uint16_t>(delta_length);
-                    strcpy(i.fileName, "12345.123");
+                    buf = file;
+                    file.recordType = FREE;
+                    file.blockCount = static_cast<uint16_t>(delta_length);
+                    strcpy(file.fileName, "12345.123");
                     delta_length = 0;
                 }
                 else {
-                    FileRecord buf1 = i;
-                    i = buf;
+                    FileRecord buf1 = file;
+                    file = buf;
                     buf = buf1;
                 }
             }
-            if(i.recordType != RECORDS_END)
-                number_end_blocks += i.blockCount;
-            if(i.recordType == RECORDS_END || i.recordType == FREE ) {
-                    if(!insert && ((i.recordType == RECORDS_END && ((filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - number_end_blocks) > length) && !have_such_number_of_bytes)
-                        || (i.recordType == RECORDS_END && ((filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - number_end_blocks) == length) && have_such_number_of_bytes) || ((i.blockCount == length && have_such_number_of_bytes) || (i.blockCount > length && !have_such_number_of_bytes)))){
-                    if(i.recordType == FREE) {
+            if(file.recordType != RECORDS_END && i+1!=FilesystemSegment::FILE_RECORDS_COUNT)
+                number_end_blocks += file.blockCount;
+            else {
+                if (filesystem.filesystemSegment[j].fileRecord[FilesystemSegment::FILE_RECORDS_COUNT - 1].recordType !=
+                    RECORDS_END) {
+                    file_record = true;
+                    break;
+                }
+            }
+            if(file.recordType == RECORDS_END || file.recordType == FREE ) {
+                    if(!insert && ((file.recordType == RECORDS_END && ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_end_blocks) > length) && !have_such_number_of_bytes)
+                        || (file.recordType == RECORDS_END && ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_end_blocks) == length) && have_such_number_of_bytes) || ((file.blockCount == length && have_such_number_of_bytes) || (file.blockCount > length && !have_such_number_of_bytes)))){
+                    if(file.recordType == FREE)
                         if (filesystem.filesystemSegment[j].fileRecord[FilesystemSegment::FILE_RECORDS_COUNT - 1].recordType == RECORDS_END) {
-                            delta_length = i.blockCount - length;
-                        } else {
-                            if(filesystem.filesystemSegment[filesystem.filesystemInfo.segmentsCount-1].fileRecord[FilesystemSegment::FILE_RECORDS_COUNT - 1].recordType != RECORDS_END)
-                                file_record  = true;
-                            break;
+                            delta_length = file.blockCount - length;
                         }
-                    }
-                    RecordType type = i.recordType;
-                    i.recordType = REGULAR_FILE;
-                    i.blockCount = static_cast<uint16_t>(length);
-                    strcpy(i.fileName, filename.c_str());
+                    RecordType type = file.recordType;
+                        file.recordType = REGULAR_FILE;
+                        file.blockCount = static_cast<uint16_t>(length);
+                    strcpy(file.fileName, filename.c_str());
                     insert = true;
                     if( type == RECORDS_END || have_such_number_of_bytes){
                         if_next_segment= true;
@@ -147,27 +154,28 @@ std::string Enter::findPlaceForFile() {
 
             }
         }
-        if(if_next_segment || file_record) break;
+        if(if_next_segment) break;
     }
-    if(file_record || !insert) return NO_FILE_RECORD;
+    if(file_record) return NOT_ENOUGH_FILE_RECORD;
+    if(!insert) return NO_FILE_RECORD;
 
     return "";
 }
 std::string Enter::run() {
     std::stringstream stream;
-    if((filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - number_not_free_blocks) >= length){
+    if(max_length_file >= length){
         std::string errorMessage;
         if (errorMessage = findPlaceForFile(); !errorMessage.empty()) return COMMON_ERROR_MESSAGE + errorMessage;
- }else
-       if(length > filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount ) {
-           stream << COMMON_ERROR_MESSAGE << TOO_BIG_FILE;
-           return stream.str();
-       }
-          else{
-              stream << COMMON_ERROR_MESSAGE << NO_SPACE;
-              return stream.str();
-          }
-
+ }else {
+        std::cerr<<filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount<<std::endl;
+        if (length > filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount) {
+            stream << COMMON_ERROR_MESSAGE << TOO_BIG_FILE;
+            return stream.str();
+        } else {
+            stream << COMMON_ERROR_MESSAGE << NO_SPACE;
+            return stream.str();
+        }
+    }
     filesystem.serializer.save(filesystem);
     stream << "File created successfully.";
     return stream.str();

@@ -4,6 +4,7 @@
 #include "Move.h"
 #include "exceptions/FileCannotCreate.hpp"
 #include "exceptions/FileNotFoundException.hpp"
+#include "UtilsFunctions.hpp"
 
 std::string Move::getQuery(){
     return "move";
@@ -70,7 +71,7 @@ bool Move::checkFile( std::string& name) {
             if (file.recordType != RECORDS_END ||
                 file.recordType != FREE) {
                 if (file.fileName == name) {
-                    if(filesystem.filesystemSegment[j].fileRecord[i+1].recordType == RECORDS_END) {
+                    if(filesystem.filesystemSegment[j].fileRecord[i+1].recordType == RECORDS_END || i+1==FilesystemSegment::FILE_RECORDS_COUNT) {
                         recordtype = RECORDS_END;
                     }
                     else
@@ -90,7 +91,7 @@ FileRecord & Move::findFile(std::string& name) {
             if (i.recordType != RECORDS_END)
                 busy_space += static_cast<int>(i.blockCount);
             else {
-                freespace = filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - busy_space;
+                freespace = UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - busy_space;
                 inSegment = j;
             }
                 if (i.fileName == name)
