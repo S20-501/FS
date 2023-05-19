@@ -36,7 +36,6 @@ std::string Enter::setLength(const keyArgs_t &keys) {
     if(auto it = keys.find("length"); it != keys.end() || ((it = keys.find("l")) != keys.end())) {
         // convert to int
         if(MonCom::convertToNumber(it->second, length)) return LENGTH_CANT_CONVERT;
-
         // check restrictions
         if(length < 1 || 65535 < length){
             return LENGTH_RESTRICTED;
@@ -108,7 +107,6 @@ std::string Enter::findPlaceForFile() {
         number_end_blocks = 0;
         for (auto &i: filesystem.filesystemSegment[j].fileRecord) {
             if(insert){
-                have_such_number_of_bytes = false;
                 if(delta_length!=0){
                     buf = i;
                     i.recordType = FREE;
@@ -160,7 +158,10 @@ std::string Enter::run() {
         std::string errorMessage;
         if (errorMessage = findPlaceForFile(); !errorMessage.empty()) return COMMON_ERROR_MESSAGE + errorMessage;
  }else
-       return NO_SPACE;
+       if(length > filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount )
+           return TOO_BIG_FILE;
+       else    return NO_SPACE;
+
     filesystem.serializer.save(filesystem);
     std::stringstream stream;
     stream << "File created successfully.";
