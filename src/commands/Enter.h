@@ -23,6 +23,7 @@ private:
     static constexpr char FILENAME_TOO_LONG[] = "The filename is too long (maximum 10 chars).";
     static constexpr char FILENAME_INCORRECT[] = "Filename has incorrect format.";
     static constexpr char FILENAME_EXISTS[] = "The file with that name already exists on disk.";
+    static constexpr char TOO_BIG_FILE[] = "It is not possible to create a record on disk. File is too big.";
     static constexpr char NO_FILE_RECORD[] = "It is not possible to create a record on disk. Perform disk SQUEEZE.";
     static constexpr char NO_SPACE[] = "There is no such free space on disk. Perform disk SQUEEZE or clear some space.";
 
