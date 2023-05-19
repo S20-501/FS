@@ -154,16 +154,21 @@ std::string Enter::findPlaceForFile() {
     return "";
 }
 std::string Enter::run() {
- if((filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - number_not_free_blocks) >= length){
+    std::stringstream stream;
+    if((filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount - number_not_free_blocks) >= length){
         std::string errorMessage;
         if (errorMessage = findPlaceForFile(); !errorMessage.empty()) return COMMON_ERROR_MESSAGE + errorMessage;
  }else
-       if(length > filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount )
-           return TOO_BIG_FILE;
-       else    return NO_SPACE;
+       if(length > filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount ) {
+           stream << COMMON_ERROR_MESSAGE << TOO_BIG_FILE;
+           return stream.str();
+       }
+          else{
+              stream << COMMON_ERROR_MESSAGE << NO_SPACE;
+              return stream.str();
+          }
 
     filesystem.serializer.save(filesystem);
-    std::stringstream stream;
     stream << "File created successfully.";
     return stream.str();
 }
