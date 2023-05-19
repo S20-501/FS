@@ -104,6 +104,24 @@ public:
 
         return str.str();
     }
+
+    /**
+     * Получает по индексу сегмента в файловой системе количество блоков в сегменте.
+     * @param filesystem Ссылка на файловую систему
+     * @param segmentIndex Индекс сегмента в файловой системе
+     * @return Количество блоков в сегменте
+     * */
+    static int getSegmentSizeInBlocks(Filesystem &filesystem, int segmentIndex)  {
+        FilesystemSegment segment = filesystem.filesystemSegment[segmentIndex];
+        int segmentSize;
+        if (filesystem.filesystemInfo.segmentsCount - 1 == segmentIndex) {
+            segmentSize = filesystem.filesystemInfo.blocksCount + filesystem.filesystemSegment->segmentHeader.filesStart - segment.segmentHeader.filesStart;
+        } else {
+            FilesystemSegment nextSegment = filesystem.filesystemSegment[segmentIndex + 1];
+            segmentSize = nextSegment.segmentHeader.filesStart - segment.segmentHeader.filesStart;
+        }
+        return segmentSize;
+    }
 };
 
 #endif //FS_UTILS_FUNCTIONS_HPP
