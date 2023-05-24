@@ -181,7 +181,7 @@ std::string Enter::run() {
             std::string errorMessage;
             if (errorMessage = findPlaceForFile(); !errorMessage.empty()) return COMMON_ERROR_MESSAGE + errorMessage;
         } else {
-            if (length > filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount) {
+            if (length > (UtilsFunctions::getSegmentSizeInBlocks(filesystem,filesystem.filesystemInfo.segmentsCount))) {
                 stream << COMMON_ERROR_MESSAGE << TOO_BIG_FILE;
                 return stream.str();
             } else {
