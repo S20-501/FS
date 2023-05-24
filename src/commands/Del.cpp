@@ -54,7 +54,7 @@ bool Del::checkFile( std::string& name) {
                 file.recordType != FREE) {
                 if (file.fileName == name) {
                         if(filesystem.filesystemSegment[j].fileRecord[i+1].recordType == RECORDS_END || i+1==FilesystemSegment::FILE_RECORDS_COUNT) {
-                        recordtype = RECORDS_END;
+                            recordtype = RECORDS_END;
                     }
                     else
                         recordtype = FREE;

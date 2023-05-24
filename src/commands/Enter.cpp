@@ -71,8 +71,10 @@ std::string Enter::setFilename(posArgs_t &poss) {
 }
 
 bool Enter::checkFile( std::string& name) {
+    bool file_record;
     int number_end_blocks;
     for (int j = 0; j < filesystem.filesystemInfo.segmentsCount; j++) {
+        file_record = false;
         number_not_free_blocks = 0;
         number_end_blocks = 0;
         for (int i=0; i<FilesystemSegment::FILE_RECORDS_COUNT; i++) {
@@ -82,13 +84,18 @@ bool Enter::checkFile( std::string& name) {
             if(file.recordType == RECORDS_END || i+1==FilesystemSegment::FILE_RECORDS_COUNT) {
                 if ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_not_free_blocks) > max_length_file)
                     max_length_file = ( UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_not_free_blocks);
-//                    std::cerr<<max_length_file<<std::endl;
-            }if (file.recordType == RECORDS_END || file.recordType == FREE) {
+                if (filesystem.filesystemSegment[j].fileRecord[FilesystemSegment::FILE_RECORDS_COUNT - 1].recordType !=RECORDS_END) {
+                    file_record = true;
+                    break;
+                }
+            }
+
+            if (file.recordType == RECORDS_END || file.recordType == FREE) {
                 if( max_length_file < file.blockCount)
                     max_length_file = file.blockCount;
 
                 if(file.blockCount == length) {
-                    have_such_number_of_bytes = true;
+                    have_such_number_of_blocks = true;
                 }
             }else {
                 number_not_free_blocks += file.blockCount;
@@ -97,8 +104,8 @@ bool Enter::checkFile( std::string& name) {
                 }
             }
         }
-        if((filesystem.filesystemInfo.blocksCount/filesystem.filesystemInfo.segmentsCount - number_end_blocks) == length) {
-            have_such_number_of_bytes = true;
+        if((filesystem.filesystemInfo.blocksCount/filesystem.filesystemInfo.segmentsCount - number_end_blocks) == length && !file_record) {
+            have_such_number_of_blocks = true;
     }
     }
     return false;
@@ -139,8 +146,8 @@ std::string Enter::findPlaceForFile() {
                 }
             }
             if(file.recordType == RECORDS_END || file.recordType == FREE ) {
-                    if(!insert && ((file.recordType == RECORDS_END && ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_end_blocks) > length) && !have_such_number_of_bytes)
-                        || (file.recordType == RECORDS_END && ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_end_blocks) == length) && have_such_number_of_bytes) || ((file.blockCount == length && have_such_number_of_bytes) || (file.blockCount > length && !have_such_number_of_bytes)))){
+                    if(!insert && ((file.recordType == RECORDS_END && ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_end_blocks) > length) && !have_such_number_of_blocks)
+                                   || (file.recordType == RECORDS_END && ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_end_blocks) == length) && have_such_number_of_blocks) || ((file.blockCount == length && have_such_number_of_blocks) || (file.blockCount > length && !have_such_number_of_blocks)))){
                     if(file.recordType == FREE)
                         if (filesystem.filesystemSegment[j].fileRecord[FilesystemSegment::FILE_RECORDS_COUNT - 1].recordType == RECORDS_END) {
                             delta_length = file.blockCount - length;
@@ -150,7 +157,7 @@ std::string Enter::findPlaceForFile() {
                         file.blockCount = static_cast<uint16_t>(length);
                     strcpy(file.fileName, filename.c_str());
                     insert = true;
-                    if( type == RECORDS_END || have_such_number_of_bytes){
+                    if( type == RECORDS_END || have_such_number_of_blocks){
                         if_next_segment= true;
                         break;
                     }
@@ -174,7 +181,6 @@ std::string Enter::run() {
             std::string errorMessage;
             if (errorMessage = findPlaceForFile(); !errorMessage.empty()) return COMMON_ERROR_MESSAGE + errorMessage;
         } else {
-            std::cerr << filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount << std::endl;
             if (length > filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount) {
                 stream << COMMON_ERROR_MESSAGE << TOO_BIG_FILE;
                 return stream.str();

@@ -9,7 +9,7 @@ private:
     Filesystem &filesystem;
     int length = 0;
     std::string filename;
-    bool have_such_number_of_bytes = false;
+    bool have_such_number_of_blocks = false;
     int number_not_free_blocks=0;
     int max_length_file= 0;
 
