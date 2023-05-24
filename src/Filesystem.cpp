@@ -35,6 +35,8 @@ void Filesystem::open(const std::string &filename) {
             throw FilesystemCorruptedException();
         }
     }
+
+    isInit = true;
 }
 
 void Filesystem::close() {
