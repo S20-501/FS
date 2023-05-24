@@ -42,6 +42,10 @@ void Full::setHeaderonly(const boolArgs_t &bools) {
 }
 
 std::string Full::run() {
+    if (!filesystem.isInit) {
+        return "Filesystem file not found. Please run init command.";
+    }
+
     bool shouldPrintFree = empty;
     bool shouldPrintHeader = header;
     bool shouldPrintOnlyHeader = headeronly;
