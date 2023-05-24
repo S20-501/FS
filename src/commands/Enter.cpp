@@ -36,7 +36,7 @@ std::string Enter::checkAmount(const Parser &parser) {
 std::string Enter::setLength(const keyArgs_t &keys) {
     if(auto it = keys.find("length"); it != keys.end() || ((it = keys.find("l")) != keys.end())) {
         // convert to int
-        if(MonCom::convertToNumber(it->second, length)) return LENGTH_CANT_CONVERT;
+        if(UtilsFunctions::convertToNumber(it->second, length)) return LENGTH_CANT_CONVERT;
         // check restrictions
         if(length < 1 || 65535 < length){
             return LENGTH_RESTRICTED;
