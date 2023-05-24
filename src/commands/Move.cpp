@@ -68,7 +68,7 @@ bool Move::checkFile( std::string& name) {
     for (int j = 0; j < filesystem.filesystemInfo.segmentsCount; j++) {
         for (int i=0; i<FilesystemSegment::FILE_RECORDS_COUNT; i++) {
             auto & file = filesystem.filesystemSegment[j].fileRecord[i];
-            if (file.recordType != RECORDS_END ||
+            if (file.recordType != RECORDS_END &&
                 file.recordType != FREE) {
                 if (file.fileName == name) {
                     if(filesystem.filesystemSegment[j].fileRecord[i+1].recordType == RECORDS_END || i+1==FilesystemSegment::FILE_RECORDS_COUNT) {
