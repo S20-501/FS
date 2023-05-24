@@ -29,6 +29,8 @@ void BinSerializer::load(Filesystem &filesystem) {
     for (int i = 0; i < filesystem.filesystemInfo.segmentsCount; i++){
         load(filesystem.filesystemSegment[i], i);
     }
+
+    filesystem.isInit = true;
 }
 
 void BinSerializer::load(FilesystemInfo &filesystemInfo) {
