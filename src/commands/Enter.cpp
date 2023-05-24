@@ -104,7 +104,7 @@ bool Enter::checkFile( std::string& name) {
                 }
             }
         }
-        if((filesystem.filesystemInfo.blocksCount/filesystem.filesystemInfo.segmentsCount - number_end_blocks) == length && !file_record) {
+        if((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_end_blocks) == length && !file_record) {
             have_such_number_of_blocks = true;
     }
     }
@@ -146,7 +146,7 @@ std::string Enter::findPlaceForFile() {
                 }
             }
             if(file.recordType == RECORDS_END || file.recordType == FREE ) {
-                    if(!insert && ((file.recordType == RECORDS_END && ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_end_blocks) > length) && !have_such_number_of_blocks)
+                if(!insert && ((file.recordType == RECORDS_END && ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_end_blocks) > length) && !have_such_number_of_blocks)
                                    || (file.recordType == RECORDS_END && ((UtilsFunctions::getSegmentSizeInBlocks(filesystem,j) - number_end_blocks) == length) && have_such_number_of_blocks) || ((file.blockCount == length && have_such_number_of_blocks) || (file.blockCount > length && !have_such_number_of_blocks)))){
                     if(file.recordType == FREE)
                         if (filesystem.filesystemSegment[j].fileRecord[FilesystemSegment::FILE_RECORDS_COUNT - 1].recordType == RECORDS_END) {
