@@ -19,6 +19,7 @@ public:
     ISerializer &serializer;
     FilesystemInfo filesystemInfo {};
     FilesystemSegment *filesystemSegment = nullptr;
+    bool isInit = false;
 
 public:
     explicit Filesystem(ISerializer &serializer) : serializer(serializer) {}
