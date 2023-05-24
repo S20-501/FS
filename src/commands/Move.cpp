@@ -103,40 +103,48 @@ FileRecord & Move::findFile(std::string& name) {
 
 std::string Move::run() {
     std::stringstream stream;
-
-    bool have_free_memory = false;
-    FileRecord& oldfile = findFile(oldFile);
-    int oldInSegment = inSegment;
-    FileRecord& newfile = findFile(newFile);
-    int freeSpaceNewSegment = freespace;
-    FileRecord old = oldfile;
-    if(filesystem.filesystemSegment[oldInSegment].fileRecord[FilesystemSegment::FILE_RECORDS_COUNT - 1].recordType == RECORDS_END) {
-        if (oldfile.blockCount >= newfile.blockCount) {
-            if (freeSpaceNewSegment >= oldfile.blockCount - newfile.blockCount)
-                have_free_memory = true;
-        } else {
-            have_free_memory = true;
-        }
+    if(!filesystem.isInit) {
+        return "File system file not found. Please run init command.";
     }
-    if(have_free_memory) {
-        oldfile.recordType = recordtype;
-        if(recordtype == RECORDS_END)
-            oldfile.blockCount = 0;
-        strcpy(oldfile.fileName,"12345.123");
-        newfile = old;
-    } else {
-        stream << COMMON_ERROR_MESSAGE << TARGET_INSUFFICENT;
-        return stream.str();
+    if(newFile == oldFile) {
+        return  "Error in move file: The file with that name already exists on disk.";
     }
-    filesystem.serializer.save(filesystem);
-    stream << "File moved successfully.";
+            bool have_free_memory = false;
+            FileRecord &oldfile = findFile(oldFile);
+            int oldInSegment = inSegment;
+            FileRecord &newfile = findFile(newFile);
+            int freeSpaceNewSegment = freespace;
+            FileRecord old = oldfile;
+            if (filesystem.filesystemSegment[oldInSegment].fileRecord[FilesystemSegment::FILE_RECORDS_COUNT -
+                                                                      1].recordType == RECORDS_END) {
+                if (oldfile.blockCount >= newfile.blockCount) {
+                    if (freeSpaceNewSegment >= oldfile.blockCount - newfile.blockCount)
+                        have_free_memory = true;
+                } else {
+                    have_free_memory = true;
+                }
+            }
+            if (have_free_memory) {
+                oldfile.recordType = recordtype;
+                if (recordtype == RECORDS_END)
+                    oldfile.blockCount = 0;
+                strcpy(oldfile.fileName, "12345.123");
+                newfile = old;
+            } else {
+                stream << COMMON_ERROR_MESSAGE << TARGET_INSUFFICENT;
+                return stream.str();
+            }
+            filesystem.serializer.save(filesystem);
+            stream << "File moved successfully.";
     return stream.str();
 }
 
 std::string Move::processQuery(Parser &parser) {
     auto poss = parser.getBoolArgs();
     std::string resultMessage;
-
+    if(!filesystem.isInit) {
+        return "File system file not found. Please run init command.";
+    }
     if(std::find(std::begin(poss), std::end(poss), "help") != std::end(poss)){
         return help();
     } else if(resultMessage = checkAndAssemble(parser); resultMessage.empty()) { // parser becomes invalid here, if no error
@@ -144,7 +152,6 @@ std::string Move::processQuery(Parser &parser) {
     } else{
         resultMessage = COMMON_ERROR_MESSAGE + resultMessage;
     }
-
     return resultMessage;
 }
 

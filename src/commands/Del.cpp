@@ -75,13 +75,16 @@ FileRecord& Del::findFile(std::string& name) const {
 }
 
 std::string Del::run() {
+    std::stringstream stream;
+    if(!filesystem.isInit) {
+        return  "File system file not found. Please run init command.";
+    }
     FileRecord &del = findFile(filename);
     del.recordType = recordtype;
     if(recordtype == RECORDS_END)
         del.blockCount = 0;
     strcpy(del.fileName,"12345.123");
     filesystem.serializer.save(filesystem);
-    std::stringstream stream;
     stream << "File deleted successfully.";
     return stream.str();
 }
@@ -89,15 +92,17 @@ std::string Del::run() {
 std::string Del::processQuery(Parser &parser) {
     auto poss = parser.getBoolArgs();
     std::string resultMessage;
-
-    if(std::find(std::begin(poss), std::end(poss), "help") != std::end(poss)){
-        return help();
-    } else if(resultMessage = checkAndAssemble(parser); resultMessage.empty()) { // parser becomes invalid here, if no error
-        resultMessage = run();
-    } else{
-        resultMessage = COMMON_ERROR_MESSAGE + resultMessage;
+    if(!filesystem.isInit) {
+        return "File system file not found. Please run init command.";
     }
-
+        if (std::find(std::begin(poss), std::end(poss), "help") != std::end(poss)) {
+            return help();
+        } else if (resultMessage = checkAndAssemble(
+                    parser); resultMessage.empty()) { // parser becomes invalid here, if no error
+            resultMessage = run();
+        } else {
+            resultMessage = COMMON_ERROR_MESSAGE + resultMessage;
+        }
     return resultMessage;
 }
 

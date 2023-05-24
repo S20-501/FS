@@ -167,21 +167,24 @@ std::string Enter::findPlaceForFile() {
 }
 std::string Enter::run() {
     std::stringstream stream;
-    if(max_length_file >= length){
-        std::string errorMessage;
-        if (errorMessage = findPlaceForFile(); !errorMessage.empty()) return COMMON_ERROR_MESSAGE + errorMessage;
- }else {
-        std::cerr<<filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount<<std::endl;
-        if (length > filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount) {
-            stream << COMMON_ERROR_MESSAGE << TOO_BIG_FILE;
-            return stream.str();
-        } else {
-            stream << COMMON_ERROR_MESSAGE << NO_SPACE;
-            return stream.str();
-        }
+    if(!filesystem.isInit) {
+        return "File system file not found. Please run init command.";
     }
-    filesystem.serializer.save(filesystem);
-    stream << "File created successfully.";
+        if (max_length_file >= length) {
+            std::string errorMessage;
+            if (errorMessage = findPlaceForFile(); !errorMessage.empty()) return COMMON_ERROR_MESSAGE + errorMessage;
+        } else {
+            std::cerr << filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount << std::endl;
+            if (length > filesystem.filesystemInfo.blocksCount / filesystem.filesystemInfo.segmentsCount) {
+                stream << COMMON_ERROR_MESSAGE << TOO_BIG_FILE;
+                return stream.str();
+            } else {
+                stream << COMMON_ERROR_MESSAGE << NO_SPACE;
+                return stream.str();
+            }
+        }
+        filesystem.serializer.save(filesystem);
+        stream << "File created successfully.";
     return stream.str();
 }
 
