@@ -49,6 +49,10 @@ std::string Enter::setLength(const keyArgs_t &keys) {
 }
 
 std::string Enter::setFilename(posArgs_t &poss) {
+    if (poss.empty()) {
+        return NO_FILENAME_VALUE;
+    }
+
     filename = std::move(poss.back());
     poss.pop_back();
     if(filename.size() >= 10){

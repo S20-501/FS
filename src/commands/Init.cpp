@@ -128,6 +128,7 @@ std::string Init::run() {
     }
 
     filesystem.serializer.save(filesystem);
+    filesystem.isInit = true;
 
     std::stringstream str;
     str << "Filesystem created successfully.";
