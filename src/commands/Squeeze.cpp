@@ -25,7 +25,9 @@ std::string Squeeze::checkAmount(const Parser &parser) {
 }
 
 std::string Squeeze::run() {
-    // return fs_squeeze();
+    if (!filesystem.isInit) {
+        return "Filesystem file not found. Please run init command.";
+    }
 
     uint16_t segments_count = filesystem.filesystemInfo.segmentsCount;
     for (uint16_t i = 0; i < segments_count; ++i) {
@@ -63,6 +65,24 @@ std::string Squeeze::run() {
                         currentFreeRecordIndex = j;
                     }
                 }
+            }
+        }
+
+        int countOfBusyRecordsAfterSqueeze = 0;
+        for (auto & fileRecord : segment.fileRecord) {
+            if (fileRecord.recordType == RecordType::RECORDS_END) {
+                countOfBusyRecordsAfterSqueeze++;
+                break;
+            }
+            else if (fileRecord.recordType != RecordType::FREE) {
+                countOfBusyRecordsAfterSqueeze++;
+            }
+        }
+        if (countOfBusyRecordsAfterSqueeze < FilesystemSegment::FILE_RECORDS_COUNT) {
+            for (int j = countOfBusyRecordsAfterSqueeze; j < FilesystemSegment::FILE_RECORDS_COUNT; ++j) {
+                FileRecord& fileRecord = segment.fileRecord[j];
+                fileRecord.recordType = RecordType::RECORDS_END;
+                fileRecord.blockCount = 0;
             }
         }
     }

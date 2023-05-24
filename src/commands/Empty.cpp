@@ -29,6 +29,9 @@ std::string Empty::checkAmount(const Parser &parser) {
 
 
 std::string Empty::run() {
+    if (!filesystem.isInit) {
+        return "Filesystem file not found. Please run init command.";
+    }
     std::stringstream stream;
 
     int countOfFreeBlocks = 0;
